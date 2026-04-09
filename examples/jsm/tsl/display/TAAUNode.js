@@ -133,7 +133,7 @@ class TAAUNode extends TempNode {
 		 * @type {number}
 		 * @default 0.025
 		 */
-		this.currentFrameWeight = 0.025;
+		this.currentFrameWeight = 0.1;
 
 		/**
 		 * The jitter index selects the current camera offset value.
