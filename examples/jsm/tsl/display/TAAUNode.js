@@ -732,7 +732,7 @@ class TAAUNode extends TempNode {
 			const meanLuma = luminance( mean.rgb ).toConst();
 			const thinFeature = currentLuma.sub( meanLuma ).abs().div( meanLuma ).smoothstep( 0, 0.2 );
 
-			const decay = isDisocclusion.select( 0, 0.5 );
+			const decay = hasValidHistory.select( 0.5, 0 );
 			const lock = max( thinFeature, historyColor.a.mul( decay ) ).saturate();
 			const lockedHistoryColor = mix( clippedHistoryColor, historyColor, lock );
 
