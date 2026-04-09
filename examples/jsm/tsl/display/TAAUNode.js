@@ -1,5 +1,5 @@
 import { HalfFloatType, Vector2, RenderTarget, RendererUtils, QuadMesh, NodeMaterial, TempNode, NodeUpdateType, Matrix4, DepthTexture } from 'three/webgpu';
-import { add, exp, float, If, Fn, max, texture, uniform, uv, vec2, vec4, luminance, convertToTexture, passTexture, velocity, getViewPosition, viewZToPerspectiveDepth, struct, ivec2, mix } from 'three/tsl';
+import { add, exp, float, If, Fn, max, texture, uniform, uv, vec2, vec4, luminance, convertToTexture, passTexture, velocity, getViewPosition, viewZToPerspectiveDepth, struct, ivec2, mix, vec3 } from 'three/tsl';
 
 const _quadMesh = /*@__PURE__*/ new QuadMesh();
 const _size = /*@__PURE__*/ new Vector2();
@@ -728,12 +728,20 @@ class TAAUNode extends TempNode {
 			// in sub-pixel detail. Motion still biases toward the current
 			// frame to keep disoccluded and fast-moving pixels responsive.
 
+			const currentLuma = luminance( currentColor.rgb );
+			const meanLuma = luminance( mean.rgb ).toConst();
+			const thinFeature = currentLuma.sub( meanLuma ).abs().div( meanLuma ).smoothstep( 0, 0.2 );
+
+			const decay = isDisocclusion.select( 0, 0.5 );
+			const lock = max( thinFeature, historyColor.a.mul( decay ) ).saturate();
+			const lockedHistoryColor = mix( clippedHistoryColor, historyColor, lock );
+
 			const currentWeight = float( this.currentFrameWeight ).toVar();
 			currentWeight.assign( hasValidHistory.select( currentWeight.add( motionFactor ).saturate(), 1 ) );
 
-			const output = flickerReduction( currentColor, clippedHistoryColor, currentWeight );
+			const output = flickerReduction( currentColor, lockedHistoryColor, currentWeight );
 
-			return output;
+			return vec4( output.rgb, lock );
 
 		} );
 

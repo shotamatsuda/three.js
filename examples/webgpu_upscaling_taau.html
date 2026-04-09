@@ -62,7 +62,7 @@
 
 				timer = new THREE.Timer();
 				timer.connect( document );
-			
+
 				// model
 
 				const dracoLoader = new DRACOLoader();
@@ -126,12 +126,12 @@
 				const scenePassVelocity = scenePass.getTextureNode( 'velocity' ).toInspector( 'Velocity' );
 
 				const taauNode = taau( scenePassColor, scenePassDepth, scenePassVelocity, camera );
-			
+
 				function updatePipeline() {
 
 					if ( params.upscaleMethod === 'TAAU' ) {
 
-						renderPipeline.outputNode = taauNode;
+						renderPipeline.outputNode = taauNode.rgb;
 
 					} else {
 
@@ -183,9 +183,9 @@
 				const delta = timer.getDelta();
 
 				if ( mixer ) {
-			
+
 					mixer.update( delta );
-			
+
 				}
 
 				renderPipeline.render();
