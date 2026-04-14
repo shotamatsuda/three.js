@@ -158,6 +158,44 @@ class StorageTextureNode extends TextureNode {
 	}
 
 	/**
+	 * Generates the uv code snippet.
+	 *
+	 * @param {NodeBuilder} builder - The current node builder.
+	 * @param {Node} uvNode - The uv node to generate code for.
+	 * @return {string} The generated code snippet.
+	 */
+	generateUV( builder, uvNode ) {
+
+		if ( this.value.is3DTexture === true ) {
+
+			return super.generateUV( builder, uvNode );
+
+		}
+
+		return uvNode.build( builder, this.sampler === true ? 'vec3' : 'ivec3' );
+
+	}
+
+	/**
+	 * Generates the offset code snippet.
+	 *
+	 * @param {NodeBuilder} builder - The current node builder.
+	 * @param {Node} offsetNode - The offset node to generate code for.
+	 * @return {string} The generated code snippet.
+	 */
+	generateOffset( builder, offsetNode ) {
+
+		if ( this.value.is3DTexture === true ) {
+
+			return super.generateOffset( builder, offsetNode );
+
+		}
+
+		return offsetNode.build( builder, 'ivec3' );
+
+	}
+
+	/**
 	 * Generates the snippet for the storage texture.
 	 *
 	 * @param {NodeBuilder} builder - The current node builder.
