@@ -11,7 +11,7 @@
 			<a href="https://threejs.org/" target="_blank" rel="noopener" class="logo-link"></a>
 
 			<div class="title-wrapper">
-				<a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a><span>Texture Gradient</span>
+				<a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a><span>Texture Gather</span>
 			</div>
 
 			<small>
@@ -116,9 +116,7 @@
 
 				const depthTexture = new THREE.DepthTexture();
 				depthTexture.compareFunction = THREE.LessEqualCompare;
-				const rt = new THREE.RenderTarget( 100, 100, {
-					depthTexture,
-				} );
+				const rt = new THREE.RenderTarget( 100, 100, { depthTexture } );
 
 				const cameraZ = 2.5;
 				const rtScene = new THREE.Scene();
