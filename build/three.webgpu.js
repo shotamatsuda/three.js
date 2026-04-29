@@ -12526,7 +12526,6 @@ class TextureNode extends UniformNode {
 		properties.compareNode = compareNode;
 		properties.compareStepNode = compareStepNode;
 		properties.gradNode = this.gradNode;
-		properties.gatherComponent = this.gatherComponent;
 		properties.depthNode = this.depthNode;
 		properties.offsetNode = this.offsetNode;
 
@@ -12571,9 +12570,10 @@ class TextureNode extends UniformNode {
 	 * @param {?Array<string>} gradSnippet - The grad snippet.
 	 * @param {?number} gatherComponent - The index of the channel to gather.
 	 * @param {?string} offsetSnippet - The offset snippet.
+	 * @param {?string} flipYSnippet - The y-flip snippet. Only used for WebGL.
 	 * @return {string} The generated code snippet.
 	 */
-	generateSnippet( builder, textureProperty, uvSnippet, levelSnippet, biasSnippet, depthSnippet, compareSnippet, gradSnippet, gatherComponent, offsetSnippet ) {
+	generateSnippet( builder, textureProperty, uvSnippet, levelSnippet, biasSnippet, depthSnippet, compareSnippet, gradSnippet, gatherComponent, offsetSnippet, flipYSnippet ) {
 
 		const texture = this.value;
 
@@ -12591,11 +12591,11 @@ class TextureNode extends UniformNode {
 
 			if ( compareSnippet ) {
 
-				snippet = builder.generateTextureGatherCompare( texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, offsetSnippet );
+				snippet = builder.generateTextureGatherCompare( texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, offsetSnippet, flipYSnippet );
 
 			} else {
 
-				snippet = builder.generateTextureGather( texture, textureProperty, uvSnippet, gatherComponent, depthSnippet, offsetSnippet );
+				snippet = builder.generateTextureGather( texture, textureProperty, uvSnippet, gatherComponent, depthSnippet, offsetSnippet, flipYSnippet );
 
 			}
 
@@ -12653,7 +12653,7 @@ class TextureNode extends UniformNode {
 
 			if ( propertyName === undefined ) {
 
-				const { uvNode, levelNode, biasNode, compareNode, compareStepNode, depthNode, gradNode, gatherComponent, offsetNode } = properties;
+				const { uvNode, levelNode, biasNode, compareNode, compareStepNode, depthNode, gradNode, offsetNode } = properties;
 
 				const uvSnippet = this.generateUV( builder, uvNode );
 				const levelSnippet = levelNode ? levelNode.build( builder, 'float' ) : null;
@@ -12663,8 +12663,9 @@ class TextureNode extends UniformNode {
 				const compareStepSnippet = compareStepNode ? compareStepNode.build( builder, 'float' ) : null;
 				const gradSnippet = gradNode ? [ gradNode[ 0 ].build( builder, 'vec2' ), gradNode[ 1 ].build( builder, 'vec2' ) ] : null;
 				const offsetSnippet = offsetNode ? this.generateOffset( builder, offsetNode ) : null;
+				const flipYSnippet = this._flipYUniform ? this._flipYUniform.build( builder, 'bool' ) : null;
 
-				if ( gatherComponent !== null ) {
+				if ( this.gatherComponent !== null ) {
 
 					nodeType = 'vec4';
 
@@ -12682,7 +12683,7 @@ class TextureNode extends UniformNode {
 
 				propertyName = builder.getPropertyName( nodeVar );
 
-				let snippet = this.generateSnippet( builder, textureProperty, uvSnippet, levelSnippet, biasSnippet, finalDepthSnippet, compareSnippet, gradSnippet, this.gatherComponent, offsetSnippet );
+				let snippet = this.generateSnippet( builder, textureProperty, uvSnippet, levelSnippet, biasSnippet, finalDepthSnippet, compareSnippet, gradSnippet, this.gatherComponent, offsetSnippet, flipYSnippet );
 
 				if ( compareStepSnippet !== null ) {
 
@@ -62894,55 +62895,59 @@ const glslPolyfills = {
 	bitcast_int_uint: new CodeNode( /* glsl */'uint tsl_bitcast_int_to_uint ( int x ) { return floatBitsToUint( intBitsToFloat ( x ) ); }' ),
 	bitcast_uint_int: new CodeNode( /* glsl */'uint tsl_bitcast_uint_to_int ( uint x ) { return floatBitsToInt( uintBitsToFloat ( x ) ); }' ),
 	textureGather: new CodeNode( /* glsl */`
-vec4 tsl_textureGather( const int comp, sampler2D map, vec2 coord, ivec2 offset ) {
+vec4 tsl_textureGather( const int comp, sampler2D map, vec2 coord, ivec2 offset, bool flipY ) {
 	vec2 size = vec2( textureSize( map, 0 ) );
 	vec2 st = floor( coord * size + vec2( offset ) - 0.5 );
 	vec4 ij = vec4( st + 0.5, st + 1.5 ) / size.xyxy;
-	return vec4(
-		texture( map, ij.xy )[ comp ],
-		texture( map, ij.zy )[ comp ],
+	vec4 ret = vec4(
+		texture( map, ij.xw )[ comp ],
 		texture( map, ij.zw )[ comp ],
-		texture( map, ij.xw )[ comp ]
+		texture( map, ij.zy )[ comp ],
+		texture( map, ij.xy )[ comp ]
 	);
+	return flipY ? ret.wzyx : ret;
 }
 ` ),
 	textureGatherArray: new CodeNode( /* glsl */`
-vec4 tsl_textureGather_array( const int comp, sampler2DArray map, vec3 coord, ivec2 offset ) {
+vec4 tsl_textureGather_array( const int comp, sampler2DArray map, vec3 coord, ivec2 offset, bool flipY ) {
 	vec2 size = vec2( textureSize( map, 0 ).xy );
 	vec2 st = floor( coord.xy * size + vec2( offset ) - 0.5 );
 	vec4 ij = vec4( st + 0.5, st + 1.5 ) / size.xyxy;
-	return vec4(
-		texture( map, vec3( ij.xy, coord.z ) )[ comp ],
-		texture( map, vec3( ij.zy, coord.z ) )[ comp ],
+	vec4 ret = vec4(
+		texture( map, vec3( ij.xw, coord.z ) )[ comp ],
 		texture( map, vec3( ij.zw, coord.z ) )[ comp ],
-		texture( map, vec3( ij.xw, coord.z ) )[ comp ]
+		texture( map, vec3( ij.zy, coord.z ) )[ comp ],
+		texture( map, vec3( ij.xy, coord.z ) )[ comp ]
 	);
+	return flipY ? ret.wzyx : ret;
 }
 ` ),
 	textureGatherCompare: new CodeNode( /* glsl */`
-vec4 tsl_textureGatherCompare( sampler2DShadow map, vec2 coord, ivec2 offset, float ref ) {
+vec4 tsl_textureGatherCompare( sampler2DShadow map, vec2 coord, ivec2 offset, float ref, bool flipY ) {
 	vec2 size = vec2( textureSize( map, 0 ) );
 	vec2 st = floor( coord * size + vec2( offset ) - 0.5 );
 	vec4 ij = vec4( st + 0.5, st + 1.5 ) / size.xyxy;
-	return vec4(
-		texture( map, vec3( ij.xy, ref ) ),
-		texture( map, vec3( ij.zy, ref ) ),
+	vec4 ret = vec4(
+		texture( map, vec3( ij.xw, ref ) ),
 		texture( map, vec3( ij.zw, ref ) ),
-		texture( map, vec3( ij.xw, ref ) )
+		texture( map, vec3( ij.zy, ref ) ),
+		texture( map, vec3( ij.xy, ref ) )
 	);
+	return flipY ? ret.wzyx : ret;
 }
 ` ),
 	textureGatherCompareArray: new CodeNode( /* glsl */`
-vec4 tsl_textureGatherCompare_array( sampler2DArrayShadow map, vec3 coord, ivec2 offset, float ref ) {
+vec4 tsl_textureGatherCompare_array( sampler2DArrayShadow map, vec3 coord, ivec2 offset, float ref, bool flipY ) {
 	vec2 size = vec2( textureSize( map, 0 ).xy );
 	vec2 st = floor( coord.xy * size + vec2( offset ) - 0.5 );
 	vec4 ij = vec4( st + 0.5, st + 1.5 ) / size.xyxy;
-	return vec4(
-		texture( map, vec4( ij.xy, coord.z, ref ) ),
-		texture( map, vec4( ij.zy, coord.z, ref ) ),
+	vec4 ret = vec4(
+		texture( map, vec4( ij.xw, coord.z, ref ) ),
 		texture( map, vec4( ij.zw, coord.z, ref ) ),
-		texture( map, vec4( ij.xw, coord.z, ref ) )
+		texture( map, vec4( ij.zy, coord.z, ref ) ),
+		texture( map, vec4( ij.xy, coord.z, ref ) )
 	);
+	return flipY ? ret.wzyx : ret;
 }
 ` )
 };
@@ -63115,7 +63120,7 @@ class GLSLNodeBuilder extends NodeBuilder {
 	 *
 	 * @param {string} type - The output type to bitcast to.
 	 * @param {string} inputType - The input type of the.
-	 * @return {string} The resolved WGSL bitcast invocation.
+	 * @return {string} The resolved GLSL bitcast invocation.
 	 */
 	getBitcastMethod( type, inputType ) {
 
@@ -63607,25 +63612,28 @@ ${ flowData.code }
 	 * @param {number} gatherComponent - The index of the channel to read. This must be in range [0, 3].
 	 * @param {?string} depthSnippet - A GLSL snippet that represents 0-based texture array index to sample.
 	 * @param {?string} offsetSnippet - A GLSL snippet that represents the offset that will be applied to the unnormalized texture coordinate before sampling the texture.
+	 * @param {?string} flipYSnippet - A GLSL snippet that represents the y-flip. Only used for WebGL.
 	 * @return {string} The GLSL snippet.
 	 */
-	generateTextureGather( texture, textureProperty, uvSnippet, gatherComponent, depthSnippet, offsetSnippet ) {
+	generateTextureGather( texture, textureProperty, uvSnippet, gatherComponent, depthSnippet, offsetSnippet, flipYSnippet ) {
 
 		if ( texture.isDepthTexture ) gatherComponent = 0;
 
 		if ( offsetSnippet === null ) offsetSnippet = 'ivec2( 0 )';
 
+		if ( flipYSnippet === null ) flipYSnippet = 'false';
+
 		if ( depthSnippet ) {
 
 			this._include( 'textureGatherArray' );
 
-			return `tsl_textureGather_array( ${gatherComponent}, ${ textureProperty }, vec3( ${ uvSnippet }, ${ depthSnippet } ), ${ offsetSnippet } )`;
+			return `tsl_textureGather_array( ${gatherComponent}, ${ textureProperty }, vec3( ${ uvSnippet }, ${ depthSnippet } ), ${ offsetSnippet }, ${ flipYSnippet } )`;
 
 		}
 
 		this._include( 'textureGather' );
 
-		return `tsl_textureGather( ${gatherComponent}, ${ textureProperty }, ${ uvSnippet }, ${ offsetSnippet } )`;
+		return `tsl_textureGather( ${gatherComponent}, ${ textureProperty }, ${ uvSnippet }, ${ offsetSnippet }, ${ flipYSnippet } )`;
 
 	}
 
@@ -63634,27 +63642,30 @@ ${ flowData.code }
 	 *
 	 * @param {Texture} texture - The texture.
 	 * @param {string} textureProperty - The name of the texture uniform in the shader.
-	 * @param {string} uvSnippet - A WGSL snippet that represents texture coordinates used for sampling.
-	 * @param {string} compareSnippet - A WGSL snippet that represents the reference value.
-	 * @param {?string} depthSnippet - A WGSL snippet that represents 0-based texture array index to sample.
-	 * @param {?string} offsetSnippet - A WGSL snippet that represents the offset that will be applied to the unnormalized texture coordinate before sampling the texture.
-	 * @return {string} The WGSL snippet.
+	 * @param {string} uvSnippet - A GLSL snippet that represents texture coordinates used for sampling.
+	 * @param {string} compareSnippet - A GLSL snippet that represents the reference value.
+	 * @param {?string} depthSnippet - A GLSL snippet that represents 0-based texture array index to sample.
+	 * @param {?string} offsetSnippet - A GLSL snippet that represents the offset that will be applied to the unnormalized texture coordinate before sampling the texture.
+	 * @param {?string} flipYSnippet - A GLSL snippet that represents the y-flip. Only used for WebGL.
+	 * @return {string} The GLSL snippet.
 	 */
-	generateTextureGatherCompare( texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, offsetSnippet ) {
+	generateTextureGatherCompare( texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, offsetSnippet, flipYSnippet ) {
 
 		if ( offsetSnippet === null ) offsetSnippet = 'ivec2( 0 )';
+
+		if ( flipYSnippet === null ) flipYSnippet = 'false';
 
 		if ( depthSnippet ) {
 
 			this._include( 'textureGatherCompareArray' );
 
-			return `tsl_textureGatherCompare_array( ${ textureProperty }, vec3( ${ uvSnippet }, ${depthSnippet} ), ${ offsetSnippet }, ${ compareSnippet } )`;
+			return `tsl_textureGatherCompare_array( ${ textureProperty }, vec3( ${ uvSnippet }, ${depthSnippet} ), ${ offsetSnippet }, ${ compareSnippet }, ${ flipYSnippet } )`;
 
 		}
 
 		this._include( 'textureGatherCompare' );
 
-		return `tsl_textureGatherCompare( ${ textureProperty }, ${ uvSnippet }, ${ offsetSnippet }, ${ compareSnippet } )`;
+		return `tsl_textureGatherCompare( ${ textureProperty }, ${ uvSnippet }, ${ offsetSnippet }, ${ compareSnippet }, ${ flipYSnippet } )`;
 
 	}
 
@@ -73377,7 +73388,7 @@ class WebGPUTextureUtils {
 
 		const samplerKey = texture.minFilter + '-' + texture.magFilter + '-' +
 			texture.wrapS + '-' + texture.wrapT + '-' + ( texture.wrapR || '0' ) + '-' +
-			texture.anisotropy + '-' + ( + texture.isDepthTexture ) + '-' +
+			texture.anisotropy + '-' + ( texture.isDepthTexture === true ? 1 : 0 ) + '-' +
 			( texture.compareFunction !== null && textureNode.compareNode !== null ? texture.compareFunction : 0 );
 
 		let samplerData = this._samplerCache.get( samplerKey );
@@ -75991,6 +76002,7 @@ class WGSLNodeBuilder extends NodeBuilder {
 	 * @param {number} gatherComponent - The index of the channel to read. This must be in range [0, 3].
 	 * @param {?string} depthSnippet - A WGSL snippet that represents 0-based texture array index to sample.
 	 * @param {?string} offsetSnippet - A WGSL snippet that represents the offset that will be applied to the unnormalized texture coordinate before sampling the texture.
+	 * @param {?string} flipYSnippet - A WGSL snippet that represents the y-flip. Only used for WebGL.
 	 * @return {string} The WGSL snippet.
 	 */
 	generateTextureGather( texture, textureProperty, uvSnippet, gatherComponent, depthSnippet, offsetSnippet ) {
@@ -76028,6 +76040,7 @@ class WGSLNodeBuilder extends NodeBuilder {
 	 * @param {string} compareSnippet - A WGSL snippet that represents the reference value.
 	 * @param {?string} depthSnippet - A WGSL snippet that represents 0-based texture array index to sample.
 	 * @param {?string} offsetSnippet - A WGSL snippet that represents the offset that will be applied to the unnormalized texture coordinate before sampling the texture.
+	 * @param {?string} flipYSnippet - A WGSL snippet that represents the y-flip. Only used for WebGL.
 	 * @return {string} The WGSL snippet.
 	 */
 	generateTextureGatherCompare( texture, textureProperty, uvSnippet, compareSnippet, depthSnippet, offsetSnippet ) {
@@ -79033,7 +79046,7 @@ class WebGPUBindingUtils {
 
 				if ( binding.texture.isDepthTexture ) {
 
-					if ( binding.texture.compareFunction !== null && backend.hasCompatibility( Compatibility.TEXTURE_COMPARE ) && binding.textureNode.compareNode !== null ) {
+					if ( binding.texture.compareFunction !== null && binding.textureNode.compareNode !== null && backend.hasCompatibility( Compatibility.TEXTURE_COMPARE ) ) {
 
 						sampler.type = GPUSamplerBindingType.Comparison;
 
