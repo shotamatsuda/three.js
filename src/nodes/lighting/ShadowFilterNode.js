@@ -103,7 +103,6 @@ export const PCFSoftShadowFilter = /*@__PURE__*/ Fn( ( { depthTexture, shadowCoo
 
 	const uv = shadowCoord.xy;
 	const f = fract( uv.mul( mapSize ).add( 0.5 ) );
-	uv.subAssign( f.mul( texelSize ) );
 
 	const gatherCompare = ( uvOffset ) => {
 
