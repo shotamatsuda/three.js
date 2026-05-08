@@ -1,4 +1,4 @@
-import { float, vec2, vec4, If, Fn } from '../tsl/TSLBase.js';
+import { float, vec2, vec4, If, Fn, ivec2 } from '../tsl/TSLBase.js';
 import { reference } from '../accessors/ReferenceNode.js';
 import { texture } from '../accessors/TextureNode.js';
 import { mix, fract, step, max, clamp } from '../math/MathNode.js';
@@ -102,12 +102,12 @@ export const PCFSoftShadowFilter = /*@__PURE__*/ Fn( ( { depthTexture, shadowCoo
 	const texelSize = vec2( 1 ).div( mapSize );
 
 	const uv = shadowCoord.xy;
-	const f = fract( uv.mul( mapSize ).add( 0.5 ) );
-	uv.subAssign( f.mul( texelSize ) );
+	const f = fract( uv.mul( mapSize ).add( 0.5 ) ).toConst();
+	uv.subAssign( f.sub( 0.5 ).mul( texelSize ) );
 
-	const gatherCompare = ( uvOffset ) => {
+	const gatherCompare = ( offset ) => {
 
-		let t = texture( depthTexture, uv.add( uvOffset ) ).gather();
+		let t = texture( depthTexture, uv ).offset( offset ).gather();
 
 		if ( depthTexture.isArrayTexture ) {
 
@@ -119,26 +119,17 @@ export const PCFSoftShadowFilter = /*@__PURE__*/ Fn( ( { depthTexture, shadowCoo
 
 	};
 
-	// 4 textureGatherCompare calls covering a 4×4 texel neighborhood.
-	// Each returns vec4: .w=(0,0) .z=(1,0) .x=(0,1) .y=(1,1) relative to base.
-	const bottomLeft = gatherCompare( texelSize.mul( vec2( - 1, - 1 ) ) ).toVar();
-	const bottomRight = gatherCompare( texelSize.mul( vec2( 1, - 1 ) ) ).toVar();
-	const topLeft = gatherCompare( texelSize.mul( vec2( - 1, 1 ) ) ).toVar();
-	const topRight = gatherCompare( texelSize.mul( vec2( 1, 1 ) ) ).toVar();
+	const c1 = gatherCompare( ivec2( - 1, 1 ) ).toConst();
+	const c2 = gatherCompare( ivec2( 1, 1 ) ).toConst();
+	const c3 = gatherCompare( ivec2( - 1, - 1 ) ).toConst();
+	const c4 = gatherCompare( ivec2( 1, - 1 ) ).toConst();
 
-	// Bilinear weighting per row: edge columns weighted by (1-f.x)/f.x, edge rows by (1-f.y)/f.y
-	const rowBot = float( 1 ).sub( f.y ).mul(
-		mix( bottomLeft.w, bottomRight.z, f.x ).add( bottomLeft.z ).add( bottomRight.w )
-	);
-
-	const row0 = mix( bottomLeft.x, bottomRight.y, f.x ).add( bottomLeft.y ).add( bottomRight.x );
-	const row1 = mix( topLeft.w, topRight.z, f.x ).add( topLeft.z ).add( topRight.w );
-
-	const rowTop = f.y.mul(
-		mix( topLeft.x, topRight.y, f.x ).add( topLeft.y ).add( topRight.x )
-	);
-
-	return add( rowBot, row0, row1, rowTop ).mul( 1 / 9 );
+	return add(
+		mix( c1.x, c2.y, f.x ).add( c1.y ).add( c2.x ).mul( f.y ),
+		mix( c1.w, c2.z, f.x ).add( c1.z ).add( c2.w ),
+		mix( c3.x, c4.y, f.x ).add( c3.y ).add( c4.x ),
+		mix( c3.w, c4.z, f.x ).add( c3.z ).add( c4.w ).mul( f.y.oneMinus() )
+	).mul( 1 / 9 );
 
 } );
 
