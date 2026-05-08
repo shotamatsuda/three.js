@@ -3871,8 +3871,6 @@ Object.defineProperties( Node.prototype, proto );
 
 // --- FINISH ---
 
-const nodeBuilderFunctionsCacheMap = new WeakMap();
-
 const ShaderNodeObject = function ( obj, altType = null ) {
 
 	const type = getValueType( obj );
@@ -4086,27 +4084,51 @@ class ShaderCallNodeInternal extends Node {
 
 		if ( shaderNode.layout ) {
 
-			const backend = builder.renderer.backend;
+			// build inputs first
 
-			let functionNodesCacheMap = nodeBuilderFunctionsCacheMap.get( backend );
+			if ( rawInputs ) {
 
-			if ( functionNodesCacheMap === undefined ) {
+				// use layout inputs to ensure that no extra parameters are built
 
-				functionNodesCacheMap = new WeakMap();
+				const inputs = shaderNode.layout.inputs;
 
-				nodeBuilderFunctionsCacheMap.set( backend, functionNodesCacheMap );
+				if ( isArrayAsParameter( rawInputs ) ) {
+
+					const rawArrayParameters = rawInputs;
+
+					for ( let i = 0; i < inputs.length; i ++ ) {
+
+						const rawParameter = rawArrayParameters[ i ];
+
+						if ( rawParameter && rawParameter.isNode ) {
+
+							rawParameter.build( builder );
+
+						}
+
+					}
+
+				} else {
+
+					const rawObjectParameters = rawInputs[ 0 ];
+
+					for ( const param of inputs ) {
+
+						const rawParameter = rawObjectParameters[ param.name ];
+
+						if ( rawParameter && rawParameter.isNode ) {
+
+							rawParameter.build( builder );
+
+						}
+
+					}
+
+				}
 
 			}
 
-			let functionNode = functionNodesCacheMap.get( shaderNode );
-
-			if ( functionNode === undefined ) {
-
-				functionNode = nodeObject( builder.buildFunctionNode( shaderNode ) );
-
-				functionNodesCacheMap.set( shaderNode, functionNode );
-
-			}
+			const functionNode = builder.buildFunctionNode( shaderNode );
 
 			builder.addInclude( functionNode );
 
@@ -4114,7 +4136,7 @@ class ShaderCallNodeInternal extends Node {
 
 			const inputs = rawInputs ? getLayoutParameters( rawInputs ) : null;
 
-			result = nodeObject( functionNode.call( inputs ) );
+			result = functionNode.call( inputs );
 
 		} else {
 
@@ -4261,15 +4283,19 @@ class ShaderCallNodeInternal extends Node {
 
 }
 
+function isArrayAsParameter( params ) {
+
+	return params[ 0 ] && ( params[ 0 ].isNode || Object.getPrototypeOf( params[ 0 ] ) !== Object.prototype );
+
+}
+
 function getLayoutParameters( params ) {
 
 	let output;
 
 	nodeObjects( params );
 
-	const isArrayAsParameter = params[ 0 ] && ( params[ 0 ].isNode || Object.getPrototypeOf( params[ 0 ] ) !== Object.prototype );
-
-	if ( isArrayAsParameter ) {
+	if ( isArrayAsParameter( params ) ) {
 
 		output = [ ...params ];
 
@@ -32416,13 +32442,20 @@ class Bindings extends DataMap {
 		const bindings = this.nodes.getForCompute( computeNode ).bindings;
 		const computeNodeData = this.get( computeNode );
 
-		if ( computeNodeData.initialized !== true ) {
+		if ( computeNodeData.initialized !== true || computeNodeData.bindings !== bindings ) {
 
-			// bind groups are created once per object
+			// bind groups are created once per compute node version
+
+			if ( computeNodeData.bindings !== undefined ) {
+
+				this._destroyBindings( computeNodeData.bindings );
+
+			}
 
 			this._createBindings( bindings );
 
 			computeNodeData.initialized = true;
+			computeNodeData.bindings = bindings;
 
 		}
 
@@ -32459,7 +32492,8 @@ class Bindings extends DataMap {
 	 */
 	deleteForCompute( computeNode ) {
 
-		const bindings = this.nodes.getForCompute( computeNode ).bindings;
+		const computeNodeData = this.get( computeNode );
+		const bindings = computeNodeData.bindings || this.nodes.getForCompute( computeNode ).bindings;
 
 		this._destroyBindings( bindings );
 
@@ -43977,69 +44011,38 @@ const PCFShadowFilter = /*@__PURE__*/ Fn( ( { depthTexture, shadowCoord, shadow,
  */
 const PCFSoftShadowFilter = /*@__PURE__*/ Fn( ( { depthTexture, shadowCoord, shadow, depthLayer } ) => {
 
-	const depthCompare = ( uv, compare ) => {
-
-		let depth = texture( depthTexture, uv );
-
-		if ( depthTexture.isArrayTexture ) {
-
-			depth = depth.depth( depthLayer );
-
-		}
-
-		return depth.compare( compare );
-
-	};
-
-
 	const mapSize = reference( 'mapSize', 'vec2', shadow ).setGroup( renderGroup );
 
 	const texelSize = vec2( 1 ).div( mapSize );
-	const dx = texelSize.x;
-	const dy = texelSize.y;
 
 	const uv = shadowCoord.xy;
-	const f = fract( uv.mul( mapSize ).add( 0.5 ) );
-	uv.subAssign( f.mul( texelSize ) );
+	const f = fract( uv.mul( mapSize ).add( 0.5 ) ).toConst();
+	uv.subAssign( f.sub( 0.5 ).mul( texelSize ) );
+
+	const gatherCompare = ( offset ) => {
+
+		let t = texture( depthTexture, uv ).offset( offset ).gather();
+
+		if ( depthTexture.isArrayTexture ) {
+
+			t = t.depth( depthLayer );
+
+		}
+
+		return t.compare( shadowCoord.z );
+
+	};
+
+	const c1 = gatherCompare( ivec2( -1, 1 ) ).toConst();
+	const c2 = gatherCompare( ivec2( 1, 1 ) ).toConst();
+	const c3 = gatherCompare( ivec2( -1, -1 ) ).toConst();
+	const c4 = gatherCompare( ivec2( 1, -1 ) ).toConst();
 
 	return add(
-		depthCompare( uv, shadowCoord.z ),
-		depthCompare( uv.add( vec2( dx, 0 ) ), shadowCoord.z ),
-		depthCompare( uv.add( vec2( 0, dy ) ), shadowCoord.z ),
-		depthCompare( uv.add( texelSize ), shadowCoord.z ),
-		mix(
-			depthCompare( uv.add( vec2( dx.negate(), 0 ) ), shadowCoord.z ),
-			depthCompare( uv.add( vec2( dx.mul( 2 ), 0 ) ), shadowCoord.z ),
-			f.x
-		),
-		mix(
-			depthCompare( uv.add( vec2( dx.negate(), dy ) ), shadowCoord.z ),
-			depthCompare( uv.add( vec2( dx.mul( 2 ), dy ) ), shadowCoord.z ),
-			f.x
-		),
-		mix(
-			depthCompare( uv.add( vec2( 0, dy.negate() ) ), shadowCoord.z ),
-			depthCompare( uv.add( vec2( 0, dy.mul( 2 ) ) ), shadowCoord.z ),
-			f.y
-		),
-		mix(
-			depthCompare( uv.add( vec2( dx, dy.negate() ) ), shadowCoord.z ),
-			depthCompare( uv.add( vec2( dx, dy.mul( 2 ) ) ), shadowCoord.z ),
-			f.y
-		),
-		mix(
-			mix(
-				depthCompare( uv.add( vec2( dx.negate(), dy.negate() ) ), shadowCoord.z ),
-				depthCompare( uv.add( vec2( dx.mul( 2 ), dy.negate() ) ), shadowCoord.z ),
-				f.x
-			),
-			mix(
-				depthCompare( uv.add( vec2( dx.negate(), dy.mul( 2 ) ) ), shadowCoord.z ),
-				depthCompare( uv.add( vec2( dx.mul( 2 ), dy.mul( 2 ) ) ), shadowCoord.z ),
-				f.x
-			),
-			f.y
-		)
+		mix( c1.x, c2.y, f.x ).add( c1.y ).add( c2.x ).mul( f.y ),
+		mix( c1.w, c2.z, f.x ).add( c1.z ).add( c2.w ),
+		mix( c3.x, c4.y, f.x ).add( c3.y ).add( c4.x ),
+		mix( c3.w, c4.z, f.x ).add( c3.z ).add( c4.w ).mul( f.y.oneMinus() )
 	).mul( 1 / 9 );
 
 } );
@@ -49870,6 +49873,7 @@ class Matrix4NodeUniform extends Matrix4Uniform {
 let _id$5 = 0;
 
 const _bindingGroupsCache = new WeakMap();
+const _functionNodeCache = new WeakMap();
 
 const sharedNodeData = new WeakMap();
 
@@ -52213,15 +52217,34 @@ class NodeBuilder {
 	 */
 	buildFunctionNode( shaderNode ) {
 
-		const fn = new FunctionNode();
+		const backend = this.renderer.backend;
 
-		const previous = this.currentFunctionNode;
+		let cache = _functionNodeCache.get( backend );
 
-		this.currentFunctionNode = fn;
+		if ( cache === undefined ) {
 
-		fn.code = this.buildFunctionCode( shaderNode );
+			cache = new WeakMap();
+			_functionNodeCache.set( backend, cache );
 
-		this.currentFunctionNode = previous;
+		}
+
+		let fn = cache.get( shaderNode );
+
+		if ( fn === undefined ) {
+
+			fn = new FunctionNode();
+
+			const previous = this.currentFunctionNode;
+
+			this.currentFunctionNode = fn;
+
+			fn.code = this.buildFunctionCode( shaderNode );
+
+			this.currentFunctionNode = previous;
+
+			cache.set( shaderNode, fn );
+
+		}
 
 		return fn;
 
@@ -54874,7 +54897,7 @@ class NodeManager extends DataMap {
 
 		let nodeBuilderState = computeData.nodeBuilderState;
 
-		if ( nodeBuilderState === undefined ) {
+		if ( nodeBuilderState === undefined || computeData.version !== computeNode.version ) {
 
 			const nodeBuilder = this.backend.createNodeBuilder( computeNode, this.renderer );
 			nodeBuilder.build();
@@ -54882,6 +54905,7 @@ class NodeManager extends DataMap {
 			nodeBuilderState = this._createNodeBuilderState( nodeBuilder );
 
 			computeData.nodeBuilderState = nodeBuilderState;
+			computeData.version = computeNode.version;
 
 		}
 
