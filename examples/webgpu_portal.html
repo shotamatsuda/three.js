@@ -62,7 +62,7 @@
 				sceneMain.backgroundNode = normalWorld.y.mix( color( 0x0066ff ), color( 0xff0066 ) );
 
 				scenePortal = new THREE.Scene();
-				// scenePortal.backgroundNode = mx_worley_noise_float( normalWorld.mul( 20 ).add( vec2( 0, time.oneMinus() ) ) ).mul( color( 0x0066ff ) );
+				scenePortal.backgroundNode = mx_worley_noise_float( normalWorld.mul( 20 ).add( vec2( 0, time.oneMinus() ) ) ).mul( color( 0x0066ff ) );
 				scenePortal.name = 'Portal Scene';
 
 				//

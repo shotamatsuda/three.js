@@ -2677,7 +2677,7 @@ function denormalize( value, array ) {
 
 		default:
 
-			throw new Error( 'Invalid component type.' );
+			throw new Error( 'THREE.MathUtils: Invalid component type.' );
 
 	}
 
@@ -2724,7 +2724,7 @@ function normalize( value, array ) {
 
 		default:
 
-			throw new Error( 'Invalid component type.' );
+			throw new Error( 'THREE.MathUtils: Invalid component type.' );
 
 	}
 
@@ -3150,7 +3150,7 @@ class Vector2 {
 
 			case 0: this.x = value; break;
 			case 1: this.y = value; break;
-			default: throw new Error( 'index is out of range: ' + index );
+			default: throw new Error( 'THREE.Vector2: index is out of range: ' + index );
 
 		}
 
@@ -3170,7 +3170,7 @@ class Vector2 {
 
 			case 0: return this.x;
 			case 1: return this.y;
-			default: throw new Error( 'index is out of range: ' + index );
+			default: throw new Error( 'THREE.Vector2: index is out of range: ' + index );
 
 		}
 
@@ -4925,7 +4925,7 @@ class Vector3 {
 			case 0: this.x = value; break;
 			case 1: this.y = value; break;
 			case 2: this.z = value; break;
-			default: throw new Error( 'index is out of range: ' + index );
+			default: throw new Error( 'THREE.Vector3: index is out of range: ' + index );
 
 		}
 
@@ -4946,7 +4946,7 @@ class Vector3 {
 			case 0: return this.x;
 			case 1: return this.y;
 			case 2: return this.z;
-			default: throw new Error( 'index is out of range: ' + index );
+			default: throw new Error( 'THREE.Vector3: index is out of range: ' + index );
 
 		}
 
@@ -8220,7 +8220,7 @@ class Vector4 {
 			case 1: this.y = value; break;
 			case 2: this.z = value; break;
 			case 3: this.w = value; break;
-			default: throw new Error( 'index is out of range: ' + index );
+			default: throw new Error( 'THREE.Vector4: index is out of range: ' + index );
 
 		}
 
@@ -8243,7 +8243,7 @@ class Vector4 {
 			case 1: return this.y;
 			case 2: return this.z;
 			case 3: return this.w;
-			default: throw new Error( 'index is out of range: ' + index );
+			default: throw new Error( 'THREE.Vector4: index is out of range: ' + index );
 
 		}
 
@@ -15795,6 +15795,11 @@ class Box3 {
 	 * (including its children), accounting for the object's, and children's,
 	 * world transforms. The function may result in a larger box than strictly necessary.
 	 *
+	 * Note: To compute the correct bounding box, make sure the given 3D object
+	 * has an up-to-date world matrix that reflects the current transformation of its
+	 * ancestor nodes. Call `object.updateWorldMatrix( true, false )` beforehand if
+	 * you're unsure.
+	 *
 	 * @param {Object3D} object - The 3D object to compute the bounding box for.
 	 * @param {boolean} [precise=false] - If set to `true`, the method computes the smallest
 	 * world-axis-aligned bounding box at the expense of more computation.
@@ -21457,6 +21462,10 @@ class SpriteMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -21471,6 +21480,9 @@ class SpriteMaterial extends Material {
 		 * when sampling this texture due to the extra bit of precision provided for
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
+		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -22792,6 +22804,10 @@ class MeshBasicMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -22799,6 +22815,11 @@ class MeshBasicMaterial extends Material {
 
 		/**
 		 * The light map. Requires a second set of UVs.
+		 *
+		 * `lightMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `lightMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -22816,6 +22837,9 @@ class MeshBasicMaterial extends Material {
 		/**
 		 * The red channel of this texture is used as the ambient occlusion map.
 		 * Requires a second set of UVs.
+		 *
+		 * `aoMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -22835,6 +22859,10 @@ class MeshBasicMaterial extends Material {
 		/**
 		 * Specular map used by the material.
 		 *
+		 * `specularMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `specularMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -22850,6 +22878,9 @@ class MeshBasicMaterial extends Material {
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
 		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -22857,6 +22888,11 @@ class MeshBasicMaterial extends Material {
 
 		/**
 		 * The environment map.
+		 *
+		 * `envMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `envMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -26971,7 +27007,7 @@ class BatchedMesh extends Mesh {
 		// throw an error if it can't be shrunk to the desired size
 		if ( maxInstanceCount < instanceInfo.length ) {
 
-			throw new Error( `BatchedMesh: Instance ids outside the range ${ maxInstanceCount } are being used. Cannot shrink instance count.` );
+			throw new Error( `THREE.BatchedMesh: Instance ids outside the range ${ maxInstanceCount } are being used. Cannot shrink instance count.` );
 
 		}
 
@@ -27023,7 +27059,7 @@ class BatchedMesh extends Mesh {
 		const requiredVertexLength = Math.max( ...validRanges.map( range => range.vertexStart + range.reservedVertexCount ) );
 		if ( requiredVertexLength > maxVertexCount ) {
 
-			throw new Error( `BatchedMesh: Geometry vertex values are being used outside the range ${ maxIndexCount }. Cannot shrink further.` );
+			throw new Error( `THREE.BatchedMesh: Geometry vertex values are being used outside the range ${ maxIndexCount }. Cannot shrink further.` );
 
 		}
 
@@ -27033,7 +27069,7 @@ class BatchedMesh extends Mesh {
 			const requiredIndexLength = Math.max( ...validRanges.map( range => range.indexStart + range.reservedIndexCount ) );
 			if ( requiredIndexLength > maxIndexCount ) {
 
-				throw new Error( `BatchedMesh: Geometry index values are being used outside the range ${ maxIndexCount }. Cannot shrink further.` );
+				throw new Error( `THREE.BatchedMesh: Geometry index values are being used outside the range ${ maxIndexCount }. Cannot shrink further.` );
 
 			}
 
@@ -27421,6 +27457,10 @@ class LineBasicMaterial extends Material {
 		/**
 		 * Sets the color of the lines using data from a texture. The texture map
 		 * color is modulated by the diffuse `color`.
+		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -27975,6 +28015,10 @@ class PointsMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -27989,6 +28033,9 @@ class PointsMaterial extends Material {
 		 * when sampling this texture due to the extra bit of precision provided for
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
+		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -28967,7 +29014,7 @@ class DepthTexture extends Texture {
 
 		if ( format !== DepthFormat && format !== DepthStencilFormat ) {
 
-			throw new Error( 'DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat' );
+			throw new Error( 'THREE.DepthTexture: format must be either THREE.DepthFormat or THREE.DepthStencilFormat' );
 
 		}
 
@@ -37972,6 +38019,10 @@ class MeshStandardMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -37979,6 +38030,11 @@ class MeshStandardMaterial extends Material {
 
 		/**
 		 * The light map. Requires a second set of UVs.
+		 *
+		 * `lightMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `lightMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -37996,6 +38052,9 @@ class MeshStandardMaterial extends Material {
 		/**
 		 * The red channel of this texture is used as the ambient occlusion map.
 		 * Requires a second set of UVs.
+		 *
+		 * `aoMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38034,6 +38093,10 @@ class MeshStandardMaterial extends Material {
 		 * emissive color and the emissive intensity. If you have an emissive map,
 		 * be sure to set the emissive color to something other than black.
 		 *
+		 * `emissiveMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `emissiveMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38044,6 +38107,9 @@ class MeshStandardMaterial extends Material {
 		 * perceived depth in relation to the lights. Bump doesn't actually affect
 		 * the geometry of the object, only the lighting. If a normal map is defined
 		 * this will be ignored.
+		 *
+		 * `bumpMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38065,6 +38131,9 @@ class MeshStandardMaterial extends Material {
 		 * case the material has a normal map authored using the left handed
 		 * convention, the `y` component of `normalScale` should be negated to compensate
 		 * for the different handedness.
+		 *
+		 * `normalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38097,6 +38166,9 @@ class MeshStandardMaterial extends Material {
 		 * displacement map with a matching normal map, since the renderer can
 		 * not recompute surface normals from the displaced vertices.
 		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38126,6 +38198,9 @@ class MeshStandardMaterial extends Material {
 		 * The green channel of this texture is used to alter the roughness of the
 		 * material.
 		 *
+		 * `roughnessMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38134,6 +38209,9 @@ class MeshStandardMaterial extends Material {
 		/**
 		 * The blue channel of this texture is used to alter the metalness of the
 		 * material.
+		 *
+		 * `metalnessMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38150,6 +38228,9 @@ class MeshStandardMaterial extends Material {
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
 		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38158,6 +38239,11 @@ class MeshStandardMaterial extends Material {
 		/**
 		 * The environment map. To ensure a physically correct rendering, environment maps
 		 * are internally pre-processed with {@link PMREMGenerator}.
+		 *
+		 * `envMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `envMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38370,6 +38456,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		 * bitangent space, to be rotated by `anisotropyRotation`. The blue channel
 		 * contains strength as `[0, 1]` to be multiplied by `anisotropy`.
 		 *
+		 * `anisotropyMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38378,6 +38467,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		/**
 		 * The red channel of this texture is multiplied against `clearcoat`,
 		 * for per-pixel control over a coating's intensity.
+		 *
+		 * `clearcoatMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38396,6 +38488,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		 * The green channel of this texture is multiplied against
 		 * `clearcoatRoughness`, for per-pixel control over a coating's roughness.
 		 *
+		 * `clearcoatRoughnessMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38412,6 +38507,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 
 		/**
 		 * Can be used to enable independent normals for the clear coat layer.
+		 *
+		 * `clearcoatNormalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38454,6 +38552,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		 * The red channel of this texture is multiplied against `iridescence`, for per-pixel
 		 * control over iridescence.
 		 *
+		 * `iridescenceMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38484,6 +38585,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		 * - `1.0` in the green channel will result in thickness equal to second element of the array.
 		 * - Values in-between will linearly interpolate between the elements of the array.
 		 *
+		 * `iridescenceThicknessMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38500,6 +38604,10 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		/**
 		 * The RGB channels of this texture are multiplied against  `sheenColor`, for per-pixel control
 		 * over sheen tint.
+		 *
+		 * `sheenColorMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `sheenColorMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38518,6 +38626,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		 * The alpha channel of this texture is multiplied against `sheenRoughness`, for per-pixel control
 		 * over sheen roughness.
 		 *
+		 * `sheenRoughnessMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38526,6 +38637,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		/**
 		 * The red channel of this texture is multiplied against `transmission`, for per-pixel control over
 		 * optical transparency.
+		 *
+		 * `transmissionMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38545,6 +38659,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		/**
 		 * A texture that defines the thickness, stored in the green channel. This will
 		 * be multiplied by `thickness`.
+		 *
+		 * `thicknessMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38583,6 +38700,9 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		 * The alpha channel of this texture is multiplied against `specularIntensity`,
 		 * for per-pixel control over specular intensity.
 		 *
+		 * `specularIntensityMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38599,6 +38719,10 @@ class MeshPhysicalMaterial extends MeshStandardMaterial {
 		/**
 		 * The RGB channels of this texture are multiplied against `specularColor`,
 		 * for per-pixel control over specular color.
+		 *
+		 * `specularColorMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `specularColorMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38897,6 +39021,10 @@ class MeshPhongMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38904,6 +39032,11 @@ class MeshPhongMaterial extends Material {
 
 		/**
 		 * The light map. Requires a second set of UVs.
+		 *
+		 * `lightMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `lightMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38921,6 +39054,9 @@ class MeshPhongMaterial extends Material {
 		/**
 		 * The red channel of this texture is used as the ambient occlusion map.
 		 * Requires a second set of UVs.
+		 *
+		 * `aoMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38959,6 +39095,10 @@ class MeshPhongMaterial extends Material {
 		 * emissive color and the emissive intensity. If you have an emissive map,
 		 * be sure to set the emissive color to something other than black.
 		 *
+		 * `emissiveMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `emissiveMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -38969,6 +39109,9 @@ class MeshPhongMaterial extends Material {
 		 * perceived depth in relation to the lights. Bump doesn't actually affect
 		 * the geometry of the object, only the lighting. If a normal map is defined
 		 * this will be ignored.
+		 *
+		 * `bumpMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -38990,6 +39133,9 @@ class MeshPhongMaterial extends Material {
 		 * case the material has a normal map authored using the left handed
 		 * convention, the `y` component of `normalScale` should be negated to compensate
 		 * for the different handedness.
+		 *
+		 * `normalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39022,6 +39168,9 @@ class MeshPhongMaterial extends Material {
 		 * displacement map with a matching normal map, since the renderer can
 		 * not recompute surface normals from the displaced vertices.
 		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39052,6 +39201,10 @@ class MeshPhongMaterial extends Material {
 		 * highlight contributes and how much of the environment map affects the
 		 * surface.
 		 *
+		 * `specularMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `specularMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39067,6 +39220,9 @@ class MeshPhongMaterial extends Material {
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
 		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39074,6 +39230,11 @@ class MeshPhongMaterial extends Material {
 
 		/**
 		 * The environment map.
+		 *
+		 * `envMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `envMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39289,6 +39450,10 @@ class MeshToonMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39299,6 +39464,9 @@ class MeshToonMaterial extends Material {
 		 * {@link Texture#minFilter} and {@link Texture#magFilter} to {@link NearestFilter}
 		 * when using this type of texture.
 		 *
+		 * `gradientMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39306,6 +39474,11 @@ class MeshToonMaterial extends Material {
 
 		/**
 		 * The light map. Requires a second set of UVs.
+		 *
+		 * `lightMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `lightMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39323,6 +39496,9 @@ class MeshToonMaterial extends Material {
 		/**
 		 * The red channel of this texture is used as the ambient occlusion map.
 		 * Requires a second set of UVs.
+		 *
+		 * `aoMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39361,6 +39537,10 @@ class MeshToonMaterial extends Material {
 		 * emissive color and the emissive intensity. If you have an emissive map,
 		 * be sure to set the emissive color to something other than black.
 		 *
+		 * `emissiveMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `emissiveMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39371,6 +39551,9 @@ class MeshToonMaterial extends Material {
 		 * perceived depth in relation to the lights. Bump doesn't actually affect
 		 * the geometry of the object, only the lighting. If a normal map is defined
 		 * this will be ignored.
+		 *
+		 * `bumpMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39392,6 +39575,9 @@ class MeshToonMaterial extends Material {
 		 * case the material has a normal map authored using the left handed
 		 * convention, the `y` component of `normalScale` should be negated to compensate
 		 * for the different handedness.
+		 *
+		 * `normalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39423,6 +39609,9 @@ class MeshToonMaterial extends Material {
 		 * repositions, the vertices of the mesh. For best results, pair a
 		 * displacement map with a matching normal map, since the renderer can
 		 * not recompute surface normals from the displaced vertices.
+		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39458,6 +39647,9 @@ class MeshToonMaterial extends Material {
 		 * when sampling this texture due to the extra bit of precision provided for
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
+		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39597,6 +39789,9 @@ class MeshNormalMaterial extends Material {
 		 * the geometry of the object, only the lighting. If a normal map is defined
 		 * this will be ignored.
 		 *
+		 * `bumpMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39617,6 +39812,9 @@ class MeshNormalMaterial extends Material {
 		 * case the material has a normal map authored using the left handed
 		 * convention, the `y` component of `normalScale` should be negated to compensate
 		 * for the different handedness.
+		 *
+		 * `normalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39787,6 +39985,10 @@ class MeshLambertMaterial extends Material {
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39794,6 +39996,11 @@ class MeshLambertMaterial extends Material {
 
 		/**
 		 * The light map. Requires a second set of UVs.
+		 *
+		 * `lightMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `lightMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39811,6 +40018,9 @@ class MeshLambertMaterial extends Material {
 		/**
 		 * The red channel of this texture is used as the ambient occlusion map.
 		 * Requires a second set of UVs.
+		 *
+		 * `aoMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39849,6 +40059,10 @@ class MeshLambertMaterial extends Material {
 		 * emissive color and the emissive intensity. If you have an emissive map,
 		 * be sure to set the emissive color to something other than black.
 		 *
+		 * `emissiveMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `emissiveMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39859,6 +40073,9 @@ class MeshLambertMaterial extends Material {
 		 * perceived depth in relation to the lights. Bump doesn't actually affect
 		 * the geometry of the object, only the lighting. If a normal map is defined
 		 * this will be ignored.
+		 *
+		 * `bumpMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39880,6 +40097,9 @@ class MeshLambertMaterial extends Material {
 		 * case the material has a normal map authored using the left handed
 		 * convention, the `y` component of `normalScale` should be negated to compensate
 		 * for the different handedness.
+		 *
+		 * `normalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -39912,6 +40132,9 @@ class MeshLambertMaterial extends Material {
 		 * displacement map with a matching normal map, since the renderer can
 		 * not recompute surface normals from the displaced vertices.
 		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39940,6 +40163,10 @@ class MeshLambertMaterial extends Material {
 		/**
 		 * Specular map used by the material.
 		 *
+		 * `specularMap` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `specularMap` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39955,6 +40182,9 @@ class MeshLambertMaterial extends Material {
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
 		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -39962,6 +40192,11 @@ class MeshLambertMaterial extends Material {
 
 		/**
 		 * The environment map.
+		 *
+		 * `envMap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. Most `envMap` textures set
+		 * `texture.colorSpace = LinearSRGBColorSpace` and use float-type formats
+		 * such as `.exr` or `.hdr`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40173,6 +40408,10 @@ class MeshDepthMaterial extends Material {
 		 * The color map. May optionally include an alpha channel, typically combined
 		 * with {@link Material#transparent} or {@link Material#alphaTest}.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -40188,6 +40427,9 @@ class MeshDepthMaterial extends Material {
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
 		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -40200,6 +40442,9 @@ class MeshDepthMaterial extends Material {
 		 * act as real geometry. The displacement texture is an image where the value
 		 * of each pixel (white being the highest) is mapped against, and
 		 * repositions, the vertices of the mesh.
+		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40313,6 +40558,10 @@ class MeshDistanceMaterial extends Material {
 		 * The color map. May optionally include an alpha channel, typically combined
 		 * with {@link Material#transparent} or {@link Material#alphaTest}.
 		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -40328,6 +40577,9 @@ class MeshDistanceMaterial extends Material {
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
 		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -40340,6 +40592,9 @@ class MeshDistanceMaterial extends Material {
 		 * act as real geometry. The displacement texture is an image where the value
 		 * of each pixel (white being the highest) is mapped against, and
 		 * repositions, the vertices of the mesh.
+		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40439,6 +40694,12 @@ class MeshMatcapMaterial extends Material {
 		/**
 		 * The matcap map.
 		 *
+		 * `matcap` represents luminance data, and the texture must be assigned
+		 * a {@link Texture#colorSpace}. HDR `matcap` textures (e.g. `.exr`)
+		 * typically set `texture.colorSpace = LinearSRGBColorSpace`, while LDR
+		 * `matcap` textures (e.g. `.png`, `.jpg`, `.webp`) typically set
+		 * `texture.colorSpace = SRGBColorSpace`.
+		 *
 		 * @type {?Texture}
 		 * @default null
 		 */
@@ -40448,6 +40709,10 @@ class MeshMatcapMaterial extends Material {
 		 * The color map. May optionally include an alpha channel, typically combined
 		 * with {@link Material#transparent} or {@link Material#alphaTest}. The texture map
 		 * color is modulated by the diffuse `color`.
+		 *
+		 * `map` represents color data, and the texture must be assigned a
+		 * {@link Texture#colorSpace}. Most `map` textures set
+		 * `texture.colorSpace = SRGBColorSpace`.
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40459,6 +40724,9 @@ class MeshMatcapMaterial extends Material {
 		 * perceived depth in relation to the lights. Bump doesn't actually affect
 		 * the geometry of the object, only the lighting. If a normal map is defined
 		 * this will be ignored.
+		 *
+		 * `bumpMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40480,6 +40748,9 @@ class MeshMatcapMaterial extends Material {
 		 * case the material has a normal map authored using the left handed
 		 * convention, the `y` component of `normalScale` should be negated to compensate
 		 * for the different handedness.
+		 *
+		 * `normalMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40511,6 +40782,9 @@ class MeshMatcapMaterial extends Material {
 		 * repositions, the vertices of the mesh. For best results, pair a
 		 * displacement map with a matching normal map, since the renderer can
 		 * not recompute surface normals from the displaced vertices.
+		 *
+		 * `displacementMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -40546,6 +40820,9 @@ class MeshMatcapMaterial extends Material {
 		 * when sampling this texture due to the extra bit of precision provided for
 		 * green in DXT-compressed and uncompressed RGB 565 formats. Luminance-only and
 		 * luminance/alpha textures will also still work as expected.
+		 *
+		 * `alphaMap` represents non-color data. Any texture assigned must have
+		 * `texture.colorSpace = NoColorSpace` (default).
 		 *
 		 * @type {?Texture}
 		 * @default null
@@ -41492,7 +41769,7 @@ class Interpolant {
 	 */
 	interpolate_( /* i1, t0, t, t1 */ ) {
 
-		throw new Error( 'call to abstract method' );
+		throw new Error( 'THREE.Interpolant: Call to abstract method.' );
 		// implementations shall return this.resultBuffer
 
 	}
@@ -48237,7 +48514,7 @@ class ObjectLoader extends Loader {
 
 		} catch ( e ) {
 
-			throw new Error( 'ObjectLoader: Can\'t parse ' + url + '. ' + e.message );
+			throw new Error( 'THREE.ObjectLoader: Can\'t parse ' + url + '. ' + e.message );
 
 		}
 
@@ -52268,7 +52545,7 @@ class PropertyBinding {
 
 		if ( matches === null ) {
 
-			throw new Error( 'PropertyBinding: Cannot parse trackName: ' + trackName );
+			throw new Error( 'THREE.PropertyBinding: Cannot parse trackName: ' + trackName );
 
 		}
 
@@ -52302,7 +52579,7 @@ class PropertyBinding {
 
 		if ( results.propertyName === null || results.propertyName.length === 0 ) {
 
-			throw new Error( 'PropertyBinding: can not parse propertyName from trackName: ' + trackName );
+			throw new Error( 'THREE.PropertyBinding: can not parse propertyName from trackName: ' + trackName );
 
 		}
 
@@ -53308,6 +53585,7 @@ class AnimationAction {
 		this._byClipCacheIndex = null; // for the memory manager
 
 		this._timeScaleInterpolant = null;
+		this._restoreTimeScale = null;
 		this._weightInterpolant = null;
 
 		/**
@@ -53595,6 +53873,10 @@ class AnimationAction {
 				startEndRatio = fadeOutDuration / fadeInDuration,
 				endStartRatio = fadeInDuration / fadeOutDuration;
 
+
+			fadeOutAction._restoreTimeScale = fadeOutAction.timeScale;
+			this._restoreTimeScale = this.timeScale;
+
 			fadeOutAction.warp( 1.0, startEndRatio, duration );
 			this.warp( endStartRatio, 1.0, duration );
 
@@ -53762,6 +54044,8 @@ class AnimationAction {
 			this._mixer._takeBackControlInterpolant( timeScaleInterpolant );
 
 		}
+
+		this._restoreTimeScale = null;
 
 		return this;
 
@@ -53935,8 +54219,6 @@ class AnimationAction {
 
 				if ( time > interpolant.parameterPositions[ 1 ] ) {
 
-					this.stopWarping();
-
 					if ( timeScale === 0 ) {
 
 						// motion has halted, pause
@@ -53944,10 +54226,18 @@ class AnimationAction {
 
 					} else {
 
+						if ( this._restoreTimeScale !== null ) {
+
+							timeScale = this._restoreTimeScale;
+
+						}
+
 						// warp done - apply final time scale
 						this.timeScale = timeScale;
 
 					}
+
+					this.stopWarping();
 
 				}
 
@@ -59488,7 +59778,7 @@ function getTextureTypeByteLength( type ) {
 
 	}
 
-	throw new Error( `Unknown texture type ${type}.` );
+	throw new Error( `THREE.TextureUtils: Unknown texture type ${type}.` );
 
 }
 
@@ -66073,7 +66363,7 @@ function includeReplacer( match, include ) {
 
 		} else {
 
-			throw new Error( 'Can not resolve #include <' + include + '>' );
+			throw new Error( 'THREE.WebGLProgram: Can not resolve #include <' + include + '>' );
 
 		}
 
@@ -72316,7 +72606,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 		if ( ! ( renderTarget.depthTexture && renderTarget.depthTexture.isDepthTexture ) ) {
 
-			throw new Error( 'renderTarget.depthTexture must be an instance of THREE.DepthTexture' );
+			throw new Error( 'THREE.WebGLTextures: renderTarget.depthTexture must be an instance of THREE.DepthTexture.' );
 
 		}
 
@@ -72414,7 +72704,7 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 		} else {
 
-			throw new Error( 'Unknown depthTexture format' );
+			throw new Error( 'THREE.WebGLTextures: Unknown depthTexture format.' );
 
 		}
 
@@ -75915,11 +76205,11 @@ class WebGLRenderer {
 
 					if ( getContext( contextName ) ) {
 
-						throw new Error( 'Error creating WebGL context with your selected attributes.' );
+						throw new Error( 'THREE.WebGLRenderer: Error creating WebGL context with your selected attributes.' );
 
 					} else {
 
-						throw new Error( 'Error creating WebGL context.' );
+						throw new Error( 'THREE.WebGLRenderer: Error creating WebGL context.' );
 
 					}
 
@@ -78458,7 +78748,7 @@ class WebGLRenderer {
 							( renderTarget.width !== depthTexture.image.width || renderTarget.height !== depthTexture.image.height )
 						) {
 
-							throw new Error( 'WebGLRenderTarget: Attached DepthTexture is initialized to the incorrect size.' );
+							throw new Error( 'THREE.WebGLRenderer: Attached DepthTexture is initialized to the incorrect size.' );
 
 						}
 
