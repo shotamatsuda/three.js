@@ -201,7 +201,8 @@ async function main() {
 		'--enable-features=Vulkan',
 		'--disable-vulkan-surface',
 		'--ignore-gpu-blocklist',
-		'--disable-gpu-driver-bug-workarounds',
+		// '--disable-gpu-driver-bug-workarounds',
+		'--disable-gpu-watchdog',
 		'--no-sandbox'
 	];
 
