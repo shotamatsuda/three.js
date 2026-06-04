@@ -90,6 +90,8 @@ Provides configuration for the decoder libraries. Configuration cannot be change
 
 The decoder config.
 
+**Deprecated:** Yes
+
 **Returns:** A reference to this loader.
 
 ### .setDecoderPath( path : string ) : DRACOLoader

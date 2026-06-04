@@ -32,6 +32,10 @@ TSL object that represents the TBN matrix in view space.
 
 Represents PI \* 2.
 
+### .alphaLine : Node.<float> (constant)
+
+TSL fragment node that computes the shape/coverage (alpha) of the fat line segment. Handles dash/gap generation, alpha-to-coverage rendering, and round endcaps.
+
 ### .alphaT : PropertyNode.<float> (constant)
 
 TSL object that represents the shader variable `AlphaT`.
@@ -459,6 +463,10 @@ TSL object that represents the object's world matrix.
 ### .modelWorldMatrixInverse : UniformNode.<mat4> (constant)
 
 TSL object that represents the object's inverse world matrix.
+
+### .mvpLine : Node.<vec4> (constant)
+
+TSL node acting as a custom Model-View-Projection (MVP) for fat lines, expanding 3D segments into screen/world-facing ribbons of a specified width.
 
 ### .normalFlat : Node.<vec3> (constant)
 
@@ -937,32 +945,6 @@ The scene to render.
 
 The camera to render the scene with.
 
-### .anamorphic( node : TextureNode, threshold : Node.<float> | number, scale : Node.<float> | number, samples : number ) : AnamorphicNode
-
-TSL function for creating an anamorphic flare effect.
-
-**node**
-
-The node that represents the input of the effect.
-
-**threshold**
-
-The threshold is one option to control the intensity and size of the effect.
-
-Default is `0.9`.
-
-**scale**
-
-Defines the vertical scale of the flares.
-
-Default is `3`.
-
-**samples**
-
-More samples result in larger flares and a more expensive runtime behavior.
-
-Default is `32`.
-
 ### .and( …nodes : Node ) : OperatorNode
 
 Performs a logical AND operation on multiple nodes.
@@ -1263,13 +1245,13 @@ TSL function for creating a barrier node.
 
 The scope defines the behavior of the node..
 
-### .batch( batchMesh : BatchedMesh ) : BatchNode
+### .batch( batchMesh : BatchedMesh )
 
-TSL function for creating a batch node.
+TSL function representing the vertex shader batching setup. Applies the batch transformation matrix to positionLocal, normalLocal, and tangentLocal. Also assigns the batch color if a color texture is present.
 
 **batchMesh**
 
-A reference to batched mesh.
+The batched mesh.
 
 ### .bentNormalView() : Node.<vec3>
 
@@ -1993,9 +1975,9 @@ The workgroup size.
 
 Default is `[64]`.
 
-### .computeSkinning( skinnedMesh : SkinnedMesh, toPosition : Node.<vec3> ) : SkinningNode
+### .computeSkinning( skinnedMesh : SkinnedMesh, toPosition : Node.<vec3> ) : Node.<vec3>
 
-TSL function for computing skinning.
+TSL function that computes skeletal animation for custom compute passes.
 
 **skinnedMesh**
 
@@ -2003,9 +1985,11 @@ The skinned mesh.
 
 **toPosition**
 
-The target position.
+The target position node to assign.
 
 Default is `null`.
+
+**Returns:** The computed skinned position node.
 
 ### .context( nodeOrValue : Node | Object, value : Object ) : ContextNode
 
@@ -2962,21 +2946,23 @@ Default is `null`.
 
 **Returns:** The inspector node.
 
-### .instance( count : number, instanceMatrix : InstancedBufferAttribute | StorageInstancedBufferAttribute, instanceColor : InstancedBufferAttribute | StorageInstancedBufferAttribute ) : InstanceNode
+### .instance( count : number, matrices : InstancedBufferAttribute | StorageInstancedBufferAttribute, colors : InstancedBufferAttribute | StorageInstancedBufferAttribute )
 
-TSL function for creating an instance node.
+TSL function representing the standard instancing vertex shader setup. Transforms positionLocal and normalLocal, and assigns varying color in-place.
 
 **count**
 
-The number of instances.
+The instance count.
 
-**instanceMatrix**
+**matrices**
 
-Instanced buffer attribute representing the instance transformations.
+The instanced transformation matrices.
 
-**instanceColor**
+**colors**
 
-Instanced buffer attribute representing the instance colors.
+The optional instanced colors.
+
+Default is `null`.
 
 ### .instancedArray( count : number | TypedArray, type : string | Struct ) : StorageBufferNode
 
@@ -3044,13 +3030,13 @@ The buffer offset.
 
 Default is `0`.
 
-### .instancedMesh( instancedMesh : InstancedMesh ) : InstancedMeshNode
+### .instancedMesh( instancedMesh : InstancedMesh )
 
-TSL function for creating an instanced mesh node.
+TSL wrapper for applying instanced mesh rendering setup.
 
 **instancedMesh**
 
-The instancedMesh.
+The instanced mesh.
 
 ### .intBitsToFloat( value : Node.<int> ) : BitcastNode
 
@@ -3475,13 +3461,13 @@ The first input.
 
 The second input.
 
-### .morphReference( mesh : Mesh ) : MorphNode
+### .morphReference( mesh : Mesh )
 
-TSL function for creating a morph node.
+TSL function representing the vertex shader morph targets blend setup. Dynamically computes morph targets weights and updates positionLocal and normalLocal in-place.
 
 **mesh**
 
-The mesh holding the morph targets.
+The mesh.
 
 ### .motionBlur( inputNode : Node.<vec4>, velocity : Node.<vec2>, numSamples : Node.<int> ) : Node.<vec4>
 
@@ -4864,9 +4850,9 @@ Returns the hyperbolic sine of the parameter.
 
 The parameter.
 
-### .skinning( skinnedMesh : SkinnedMesh ) : SkinningNode
+### .skinning( skinnedMesh : SkinnedMesh )
 
-TSL function for creating a skinning node.
+TSL function representing the standard skeletal animation vertex shader setup. Transforms positionLocal, normalLocal, and tangentLocal in-place.
 
 **skinnedMesh**
 

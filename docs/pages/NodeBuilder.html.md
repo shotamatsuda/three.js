@@ -138,6 +138,12 @@ Since the [NodeBuilder#cache](NodeBuilder.html#cache) might be temporarily overw
 
 Default is `this.cache`.
 
+### .hardwareClipping : boolean
+
+Whether the built material uses hardware clipping or not.
+
+Default is `false`.
+
 ### .hashNodes : Object.<number, Node>
 
 A dictionary that assigns each node to a unique hash.
@@ -152,7 +158,7 @@ Default is `null`.
 
 The material of the 3D object.
 
-### .nodes : Array.<Node>
+### .nodes : Set.<Node>
 
 A list of all nodes the builder is processing for this 3D object.
 
@@ -180,7 +186,7 @@ The scene the 3D object belongs to.
 
 Default is `null`.
 
-### .sequentialNodes : Array.<Node>
+### .sequentialNodes : Set.<Node>
 
 A list of all nodes the builder is processing in sequential order.
 

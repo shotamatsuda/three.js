@@ -777,6 +777,278 @@
 			"kind": "function"
 		},
 		{
+			"title": "Backend",
+			"kind": "class"
+		},
+		{
+			"title": "Backend#_getQueryPool",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#beginCompute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#beginRender",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#compute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#coordinateSystem",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#copyFramebufferToTexture",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#copyTextureToBuffer",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#copyTextureToTexture",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createAttribute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createBindings",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createComputePipeline",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createDefaultTexture",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createIndexAttribute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createNodeBuilder",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createProgram",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createRenderPipeline",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createStorageAttribute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createTexture",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#createUniformBuffer",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#data",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#delete",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#deleteBindGroupData",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#destroyAttribute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#destroyProgram",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#destroyTexture",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#destroyUniformBuffer",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#dispose",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#domElement",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#draw",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#finishCompute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#finishRender",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#generateMipmaps",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#get",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getArrayBufferAsync",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getClearColor",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getContext",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getDomElement",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getDrawingBufferSize",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getRenderCacheKey",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getTimestamp",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getTimestampFrames",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#getTimestampUID",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#has",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#hasCompatibility",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#hasFeature",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#hasFeatureAsync",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#hasTimestamp",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#init",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#initRenderTarget",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#isOccluded",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#needsRenderUpdate",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#parameters",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#renderer",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#resolveTimestampsAsync",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#set",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#setScissorTest",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#setXRTarget",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#timestampQueryPool",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#trackTimestamp",
+			"kind": "member"
+		},
+		{
+			"title": "Backend#updateAttribute",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateBinding",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateBindings",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateSampler",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateSize",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateTexture",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateTimeStampUID",
+			"kind": "function"
+		},
+		{
+			"title": "Backend#updateViewport",
+			"kind": "function"
+		},
+		{
 			"title": "BarrierNode",
 			"kind": "class"
 		},
@@ -806,22 +1078,6 @@
 		},
 		{
 			"title": "BasicLightingModel#indirect",
-			"kind": "function"
-		},
-		{
-			"title": "BatchNode",
-			"kind": "class"
-		},
-		{
-			"title": "BatchNode#batchMesh",
-			"kind": "member"
-		},
-		{
-			"title": "BatchNode#batchingIdNode",
-			"kind": "member"
-		},
-		{
-			"title": "BatchNode#setup",
 			"kind": "function"
 		},
 		{
@@ -2981,6 +3237,10 @@
 			"kind": "class"
 		},
 		{
+			"title": "DataTextureLoader#createDataTexture",
+			"kind": "function"
+		},
+		{
 			"title": "DataTextureLoader#load",
 			"kind": "function"
 		},
@@ -4125,58 +4385,6 @@
 			"kind": "function"
 		},
 		{
-			"title": "InstanceNode",
-			"kind": "class"
-		},
-		{
-			"title": "InstanceNode#buffer",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#bufferColor",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#count",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#getPreviousInstancedPosition",
-			"kind": "function"
-		},
-		{
-			"title": "InstanceNode#instanceColor",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#instanceColorNode",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#instanceMatrix",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#instanceMatrixNode",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#previousInstanceMatrixNode",
-			"kind": "member"
-		},
-		{
-			"title": "InstanceNode#setup",
-			"kind": "function"
-		},
-		{
-			"title": "InstanceNode#update",
-			"kind": "function"
-		},
-		{
-			"title": "InstanceNode#updateType",
-			"kind": "member"
-		},
-		{
 			"title": "InstancedBufferAttribute",
 			"kind": "class"
 		},
@@ -4253,10 +4461,6 @@
 			"kind": "member"
 		},
 		{
-			"title": "InstancedMesh#previousInstanceMatrix",
-			"kind": "member"
-		},
-		{
 			"title": "InstancedMesh#setColorAt",
 			"kind": "function"
 		},
@@ -4267,14 +4471,6 @@
 		{
 			"title": "InstancedMesh#setMorphAt",
 			"kind": "function"
-		},
-		{
-			"title": "InstancedMeshNode",
-			"kind": "class"
-		},
-		{
-			"title": "InstancedMeshNode#instancedMesh",
-			"kind": "member"
 		},
 		{
 			"title": "Int16BufferAttribute",
@@ -4873,6 +5069,10 @@
 			"kind": "member"
 		},
 		{
+			"title": "LightingContextNode#materialLightings",
+			"kind": "member"
+		},
+		{
 			"title": "LightingModel",
 			"kind": "class"
 		},
@@ -4909,6 +5109,10 @@
 			"kind": "class"
 		},
 		{
+			"title": "LightsNode#analyze",
+			"kind": "function"
+		},
+		{
 			"title": "LightsNode#customCacheKey",
 			"kind": "function"
 		},
@@ -4942,6 +5146,10 @@
 		},
 		{
 			"title": "LightsNode#setupDirectLight",
+			"kind": "function"
+		},
+		{
+			"title": "LightsNode#setupDirectRectAreaLight",
 			"kind": "function"
 		},
 		{
@@ -5037,7 +5245,11 @@
 			"kind": "member"
 		},
 		{
-			"title": "Line2NodeMaterial#setup",
+			"title": "Line2NodeMaterial#setupDiffuseColor",
+			"kind": "function"
+		},
+		{
+			"title": "Line2NodeMaterial#setupModelViewProjection",
 			"kind": "function"
 		},
 		{
@@ -7249,30 +7461,6 @@
 			"kind": "function"
 		},
 		{
-			"title": "MorphNode",
-			"kind": "class"
-		},
-		{
-			"title": "MorphNode#mesh",
-			"kind": "member"
-		},
-		{
-			"title": "MorphNode#morphBaseInfluence",
-			"kind": "member"
-		},
-		{
-			"title": "MorphNode#setup",
-			"kind": "function"
-		},
-		{
-			"title": "MorphNode#update",
-			"kind": "function"
-		},
-		{
-			"title": "MorphNode#updateType",
-			"kind": "member"
-		},
-		{
 			"title": "Node",
 			"kind": "class"
 		},
@@ -7969,6 +8157,10 @@
 			"kind": "member"
 		},
 		{
+			"title": "NodeBuilder#hardwareClipping",
+			"kind": "member"
+		},
+		{
 			"title": "NodeBuilder#hasGeometryAttribute",
 			"kind": "function"
 		},
@@ -8457,10 +8649,6 @@
 			"kind": "member"
 		},
 		{
-			"title": "NodeMaterial#hardwareClipping",
-			"kind": "member"
-		},
-		{
 			"title": "NodeMaterial#lights",
 			"kind": "member"
 		},
@@ -8549,7 +8737,7 @@
 			"kind": "function"
 		},
 		{
-			"title": "NodeMaterial#setupLights",
+			"title": "NodeMaterial#setupMaterialLightings",
 			"kind": "function"
 		},
 		{
@@ -9478,10 +9666,6 @@
 		},
 		{
 			"title": "PassNode#setMRT",
-			"kind": "function"
-		},
-		{
-			"title": "PassNode#setPixelRatio",
 			"kind": "function"
 		},
 		{
@@ -10421,6 +10605,10 @@
 			"kind": "member"
 		},
 		{
+			"title": "RTTNode#getResolutionScale",
+			"kind": "function"
+		},
+		{
 			"title": "RTTNode#height",
 			"kind": "member"
 		},
@@ -10429,15 +10617,11 @@
 			"kind": "member"
 		},
 		{
-			"title": "RTTNode#pixelRatio",
-			"kind": "member"
-		},
-		{
 			"title": "RTTNode#renderTarget",
 			"kind": "member"
 		},
 		{
-			"title": "RTTNode#setPixelRatio",
+			"title": "RTTNode#setResolutionScale",
 			"kind": "function"
 		},
 		{
@@ -11949,10 +12133,6 @@
 			"kind": "function"
 		},
 		{
-			"title": "Skeleton#previousBoneMatrices",
-			"kind": "member"
-		},
-		{
 			"title": "Skeleton#toJSON",
 			"kind": "function"
 		},
@@ -12027,74 +12207,6 @@
 		{
 			"title": "SkinnedMesh#pose",
 			"kind": "function"
-		},
-		{
-			"title": "SkinningNode",
-			"kind": "class"
-		},
-		{
-			"title": "SkinningNode#bindMatrixInverseNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#bindMatrixNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#boneMatricesNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#generate",
-			"kind": "function"
-		},
-		{
-			"title": "SkinningNode#getPreviousSkinnedPosition",
-			"kind": "function"
-		},
-		{
-			"title": "SkinningNode#getSkinnedNormalAndTangent",
-			"kind": "function"
-		},
-		{
-			"title": "SkinningNode#getSkinnedPosition",
-			"kind": "function"
-		},
-		{
-			"title": "SkinningNode#positionNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#previousBoneMatricesNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#setup",
-			"kind": "function"
-		},
-		{
-			"title": "SkinningNode#skinIndexNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#skinWeightNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#skinnedMesh",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#toPositionNode",
-			"kind": "member"
-		},
-		{
-			"title": "SkinningNode#update",
-			"kind": "function"
-		},
-		{
-			"title": "SkinningNode#updateType",
-			"kind": "member"
 		},
 		{
 			"title": "Source",
@@ -12619,6 +12731,10 @@
 		{
 			"title": "StackTrace#stack",
 			"kind": "member"
+		},
+		{
+			"title": "StandardNodeLibrary",
+			"kind": "class"
 		},
 		{
 			"title": "StereoCamera",
@@ -16107,62 +16223,6 @@
 			"kind": "function"
 		},
 		{
-			"title": "AnamorphicNode",
-			"kind": "class"
-		},
-		{
-			"title": "AnamorphicNode#colorNode",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#dispose",
-			"kind": "function"
-		},
-		{
-			"title": "AnamorphicNode#getTextureNode",
-			"kind": "function"
-		},
-		{
-			"title": "AnamorphicNode#resolution",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#resolutionScale",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#samples",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#scaleNode",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#setSize",
-			"kind": "function"
-		},
-		{
-			"title": "AnamorphicNode#setup",
-			"kind": "function"
-		},
-		{
-			"title": "AnamorphicNode#textureNode",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#thresholdNode",
-			"kind": "member"
-		},
-		{
-			"title": "AnamorphicNode#updateBefore",
-			"kind": "function"
-		},
-		{
-			"title": "AnamorphicNode#updateBeforeType",
-			"kind": "member"
-		},
-		{
 			"title": "AnimationClipCreator",
 			"kind": "class"
 		},
@@ -16463,8 +16523,16 @@
 			"kind": "function"
 		},
 		{
+			"title": "BloomNode#getResolutionScale",
+			"kind": "function"
+		},
+		{
 			"title": "BloomNode#getTextureNode",
 			"kind": "function"
+		},
+		{
+			"title": "BloomNode#highPassFn",
+			"kind": "member"
 		},
 		{
 			"title": "BloomNode#inputNode",
@@ -16473,6 +16541,10 @@
 		{
 			"title": "BloomNode#radius",
 			"kind": "member"
+		},
+		{
+			"title": "BloomNode#setResolutionScale",
+			"kind": "function"
 		},
 		{
 			"title": "BloomNode#setSize",
@@ -23855,6 +23927,10 @@
 			"kind": "function"
 		},
 		{
+			"title": "module-GroundedSkybox",
+			"kind": "module"
+		},
+		{
 			"title": "module-HalftoneShader",
 			"kind": "module"
 		},
@@ -25809,6 +25885,10 @@
 			"kind": "member"
 		},
 		{
+			"title": "batchColor",
+			"kind": "member"
+		},
+		{
 			"title": "buildData3DTexture",
 			"kind": "function"
 		},
@@ -25823,6 +25903,10 @@
 		{
 			"title": "clamp",
 			"kind": "function"
+		},
+		{
+			"title": "closestLineToLine",
+			"kind": "member"
 		},
 		{
 			"title": "contain",
@@ -25842,6 +25926,10 @@
 		},
 		{
 			"title": "createEvent",
+			"kind": "function"
+		},
+		{
+			"title": "createInstanceMatrixNode",
 			"kind": "function"
 		},
 		{
@@ -25905,6 +25993,10 @@
 			"kind": "function"
 		},
 		{
+			"title": "getBatchingColor",
+			"kind": "member"
+		},
+		{
 			"title": "getByteLength",
 			"kind": "function"
 		},
@@ -25925,6 +26017,10 @@
 			"kind": "function"
 		},
 		{
+			"title": "getEntry",
+			"kind": "function"
+		},
+		{
 			"title": "getFilteredStack",
 			"kind": "function"
 		},
@@ -25937,11 +26033,35 @@
 			"kind": "function"
 		},
 		{
+			"title": "getIndirectIndex",
+			"kind": "member"
+		},
+		{
 			"title": "getKeyframeOrder",
 			"kind": "function"
 		},
 		{
 			"title": "getMembersLayout",
+			"kind": "function"
+		},
+		{
+			"title": "getMorph",
+			"kind": "member"
+		},
+		{
+			"title": "getPreviousInstance",
+			"kind": "function"
+		},
+		{
+			"title": "getPreviousSkinnedPosition",
+			"kind": "function"
+		},
+		{
+			"title": "getSkinnedNormalAndTangent",
+			"kind": "function"
+		},
+		{
+			"title": "getSkinnedPosition",
 			"kind": "function"
 		},
 		{
@@ -25965,6 +26085,10 @@
 			"kind": "function"
 		},
 		{
+			"title": "instanceColor",
+			"kind": "member"
+		},
+		{
 			"title": "inverseLerp",
 			"kind": "function"
 		},
@@ -25979,6 +26103,10 @@
 		{
 			"title": "lerp",
 			"kind": "function"
+		},
+		{
+			"title": "lineDistance",
+			"kind": "member"
 		},
 		{
 			"title": "log",
@@ -26045,8 +26173,16 @@
 			"kind": "function"
 		},
 		{
+			"title": "morphTargetInfluences",
+			"kind": "member"
+		},
+		{
 			"title": "normalize",
 			"kind": "function"
+		},
+		{
+			"title": "outgoingLight",
+			"kind": "member"
 		},
 		{
 			"title": "pingpong",
@@ -26117,6 +26253,18 @@
 			"kind": "function"
 		},
 		{
+			"title": "totalDiffuse",
+			"kind": "member"
+		},
+		{
+			"title": "totalSpecular",
+			"kind": "member"
+		},
+		{
+			"title": "trimSegmentAlpha",
+			"kind": "member"
+		},
+		{
 			"title": "updateCamera",
 			"kind": "function"
 		},
@@ -26135,6 +26283,18 @@
 		{
 			"title": "warnOnce",
 			"kind": "function"
+		},
+		{
+			"title": "worldEnd",
+			"kind": "member"
+		},
+		{
+			"title": "worldPos",
+			"kind": "member"
+		},
+		{
+			"title": "worldStart",
+			"kind": "member"
 		},
 		{
 			"title": "yieldToMain",
@@ -26243,15 +26403,15 @@
 			"kind": "function"
 		},
 		{
+			"title": "alphaLine",
+			"kind": "member"
+		},
+		{
 			"title": "alphaT",
 			"kind": "member"
 		},
 		{
 			"title": "anaglyphPass",
-			"kind": "function"
-		},
-		{
-			"title": "anamorphic",
 			"kind": "function"
 		},
 		{
@@ -27399,6 +27559,10 @@
 			"kind": "function"
 		},
 		{
+			"title": "module-GroundedSkybox.getGroundProjectedNormal",
+			"kind": "function"
+		},
+		{
 			"title": "module-Raymarching.RaymarchingBox",
 			"kind": "function"
 		},
@@ -27417,6 +27581,10 @@
 		{
 			"title": "mul",
 			"kind": "function"
+		},
+		{
+			"title": "mvpLine",
+			"kind": "member"
 		},
 		{
 			"title": "negate",

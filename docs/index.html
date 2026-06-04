@@ -292,7 +292,6 @@
 						<li><a href="BasicEnvironmentNode.html">BasicEnvironmentNode</a></li>
 						<li><a href="BasicLightMapNode.html">BasicLightMapNode</a></li>
 						<li><a href="BasicLightingModel.html">BasicLightingModel</a></li>
-						<li><a href="BatchNode.html">BatchNode</a></li>
 						<li><a href="BitcastNode.html">BitcastNode</a></li>
 						<li><a href="BitcountNode.html">BitcountNode</a></li>
 						<li><a href="BufferAttributeNode.html">BufferAttributeNode</a></li>
@@ -327,8 +326,6 @@
 						<li><a href="IndexNode.html">IndexNode</a></li>
 						<li><a href="InputNode.html">InputNode</a></li>
 						<li><a href="InspectorNode.html">InspectorNode</a></li>
-						<li><a href="InstanceNode.html">InstanceNode</a></li>
-						<li><a href="InstancedMeshNode.html">InstancedMeshNode</a></li>
 						<li><a href="IrradianceNode.html">IrradianceNode</a></li>
 						<li><a href="IsolateNode.html">IsolateNode</a></li>
 						<li><a href="JoinNode.html">JoinNode</a></li>
@@ -345,7 +342,6 @@
 						<li><a href="MaxMipLevelNode.html">MaxMipLevelNode</a></li>
 						<li><a href="MemberNode.html">MemberNode</a></li>
 						<li><a href="ModelNode.html">ModelNode</a></li>
-						<li><a href="MorphNode.html">MorphNode</a></li>
 						<li><a href="Node.html">Node</a></li>
 						<li><a href="NodeAttribute.html">NodeAttribute</a></li>
 						<li><a href="NodeBuilder.html">NodeBuilder</a></li>
@@ -392,7 +388,6 @@
 						<li><a href="ShadowBaseNode.html">ShadowBaseNode</a></li>
 						<li><a href="ShadowMaskModel.html">ShadowMaskModel</a></li>
 						<li><a href="ShadowNode.html">ShadowNode</a></li>
-						<li><a href="SkinningNode.html">SkinningNode</a></li>
 						<li><a href="SplitNode.html">SplitNode</a></li>
 						<li><a href="SpotLightNode.html">SpotLightNode</a></li>
 						<li><a href="StackNode.html">StackNode</a></li>
@@ -449,6 +444,7 @@
 					</ul>
 					<h3>Renderers</h3>
 					<ul>
+						<li><a href="Backend.html">Backend</a></li>
 						<li><a href="BlendMode.html">BlendMode</a></li>
 						<li><a href="BundleGroup.html">BundleGroup</a></li>
 						<li><a href="CanvasTarget.html">CanvasTarget</a></li>
@@ -462,6 +458,7 @@
 						<li><a href="ReadbackBuffer.html">ReadbackBuffer</a></li>
 						<li><a href="RenderPipeline.html">RenderPipeline</a></li>
 						<li><a href="Renderer.html">Renderer</a></li>
+						<li><a href="StandardNodeLibrary.html">StandardNodeLibrary</a></li>
 						<li><a href="Storage3DTexture.html">Storage3DTexture</a></li>
 						<li><a href="StorageArrayTexture.html">StorageArrayTexture</a></li>
 						<li><a href="StorageBufferAttribute.html">StorageBufferAttribute</a></li>
@@ -879,7 +876,6 @@
 						<li><a href="AfterImageNode.html">AfterImageNode</a></li>
 						<li><a href="AmbientLightDataNode.html">AmbientLightDataNode</a></li>
 						<li><a href="AnaglyphPassNode.html">AnaglyphPassNode</a></li>
-						<li><a href="AnamorphicNode.html">AnamorphicNode</a></li>
 						<li><a href="BilateralBlurNode.html">BilateralBlurNode</a></li>
 						<li><a href="BloomNode.html">BloomNode</a></li>
 						<li><a href="ChromaticAberrationNode.html">ChromaticAberrationNode</a></li>
@@ -923,6 +919,7 @@
 						<li><a href="TransitionNode.html">TransitionNode</a></li>
 						<li><a href="WebGLNodesHandler.html">WebGLNodesHandler</a></li>
 						<li><a href="module-Bayer.html">Bayer</a></li>
+						<li><a href="module-GroundedSkybox.html">GroundedSkybox</a></li>
 						<li><a href="module-Raymarching.html">Raymarching</a></li>
 					</ul>
 					<h3>Textures</h3>
@@ -995,9 +992,9 @@
 						<li><a href="TSL.html#afterImage">afterImage</a></li>
 						<li><a href="TSL.html#agxToneMapping">agxToneMapping</a></li>
 						<li><a href="TSL.html#all">all</a></li>
+						<li><a href="TSL.html#alphaLine">alphaLine</a></li>
 						<li><a href="TSL.html#alphaT">alphaT</a></li>
 						<li><a href="TSL.html#anaglyphPass">anaglyphPass</a></li>
-						<li><a href="TSL.html#anamorphic">anamorphic</a></li>
 						<li><a href="TSL.html#and">and</a></li>
 						<li><a href="TSL.html#anisotropy">anisotropy</a></li>
 						<li><a href="TSL.html#anisotropyB">anisotropyB</a></li>
@@ -1286,6 +1283,7 @@
 						<li><a href="TSL.html#motionBlur">motionBlur</a></li>
 						<li><a href="TSL.html#mrt">mrt</a></li>
 						<li><a href="TSL.html#mul">mul</a></li>
+						<li><a href="TSL.html#mvpLine">mvpLine</a></li>
 						<li><a href="TSL.html#negate">negate</a></li>
 						<li><a href="TSL.html#neutralToneMapping">neutralToneMapping</a></li>
 						<li><a href="TSL.html#normalFlat">normalFlat</a></li>
@@ -1777,14 +1775,17 @@
 						<li><a href="global.html#ZeroFactor">ZeroFactor</a></li>
 						<li><a href="global.html#ZeroSlopeEnding">ZeroSlopeEnding</a></li>
 						<li><a href="global.html#ZeroStencilOp">ZeroStencilOp</a></li>
+						<li><a href="global.html#batchColor">batchColor</a></li>
 						<li><a href="global.html#buildData3DTexture">buildData3DTexture</a></li>
 						<li><a href="global.html#buildMesh">buildMesh</a></li>
 						<li><a href="global.html#ceilPowerOfTwo">ceilPowerOfTwo</a></li>
+						<li><a href="global.html#closestLineToLine">closestLineToLine</a></li>
 						<li><a href="global.html#contain">contain</a></li>
 						<li><a href="global.html#convertArray">convertArray</a></li>
 						<li><a href="global.html#cover">cover</a></li>
 						<li><a href="global.html#createCanvasElement">createCanvasElement</a></li>
 						<li><a href="global.html#createEvent">createEvent</a></li>
+						<li><a href="global.html#createInstanceMatrixNode">createInstanceMatrixNode</a></li>
 						<li><a href="global.html#damp">damp</a></li>
 						<li><a href="global.html#degToRad">degToRad</a></li>
 						<li><a href="global.html#denormalize">denormalize</a></li>
@@ -1800,27 +1801,39 @@
 						<li><a href="global.html#generateMagicSquare">generateMagicSquare</a></li>
 						<li><a href="global.html#generateMagicSquareNoise">generateMagicSquareNoise</a></li>
 						<li><a href="global.html#generateUUID">generateUUID</a></li>
+						<li><a href="global.html#getBatchingColor">getBatchingColor</a></li>
 						<li><a href="global.html#getByteLength">getByteLength</a></li>
 						<li><a href="global.html#getCacheKey">getCacheKey</a></li>
 						<li><a href="global.html#getConsoleFunction">getConsoleFunction</a></li>
 						<li><a href="global.html#getDistanceAttenuation">getDistanceAttenuation</a></li>
 						<li><a href="global.html#getElementsByTagName">getElementsByTagName</a></li>
+						<li><a href="global.html#getEntry">getEntry</a></li>
 						<li><a href="global.html#getFilteredStack">getFilteredStack</a></li>
 						<li><a href="global.html#getFloatLength">getFloatLength</a></li>
 						<li><a href="global.html#getFormat">getFormat</a></li>
+						<li><a href="global.html#getIndirectIndex">getIndirectIndex</a></li>
 						<li><a href="global.html#getKeyframeOrder">getKeyframeOrder</a></li>
 						<li><a href="global.html#getMembersLayout">getMembersLayout</a></li>
+						<li><a href="global.html#getMorph">getMorph</a></li>
+						<li><a href="global.html#getPreviousInstance">getPreviousInstance</a></li>
+						<li><a href="global.html#getPreviousSkinnedPosition">getPreviousSkinnedPosition</a></li>
+						<li><a href="global.html#getSkinnedNormalAndTangent">getSkinnedNormalAndTangent</a></li>
+						<li><a href="global.html#getSkinnedPosition">getSkinnedPosition</a></li>
 						<li><a href="global.html#getStrideLength">getStrideLength</a></li>
 						<li><a href="global.html#getTextureIndex">getTextureIndex</a></li>
 						<li><a href="global.html#getUniforms">getUniforms</a></li>
 						<li><a href="global.html#getVectorLength">getVectorLength</a></li>
 						<li><a href="global.html#getViewZNode">getViewZNode</a></li>
+						<li><a href="global.html#instanceColor">instanceColor</a></li>
 						<li><a href="global.html#inverseLerp">inverseLerp</a></li>
 						<li><a href="global.html#isPowerOfTwo">isPowerOfTwo</a></li>
 						<li><a href="global.html#isTypedArray">isTypedArray</a></li>
 						<li><a href="global.html#lerp">lerp</a></li>
+						<li><a href="global.html#lineDistance">lineDistance</a></li>
 						<li><a href="global.html#makeClipAdditive">makeClipAdditive</a></li>
 						<li><a href="global.html#mapLinear">mapLinear</a></li>
+						<li><a href="global.html#morphTargetInfluences">morphTargetInfluences</a></li>
+						<li><a href="global.html#outgoingLight">outgoingLight</a></li>
 						<li><a href="global.html#pingpong">pingpong</a></li>
 						<li><a href="global.html#radToDeg">radToDeg</a></li>
 						<li><a href="global.html#randFloat">randFloat</a></li>
@@ -1837,11 +1850,17 @@
 						<li><a href="global.html#sortedArray">sortedArray</a></li>
 						<li><a href="global.html#subclip">subclip</a></li>
 						<li><a href="global.html#toHalfFloat">toHalfFloat</a></li>
+						<li><a href="global.html#totalDiffuse">totalDiffuse</a></li>
+						<li><a href="global.html#totalSpecular">totalSpecular</a></li>
+						<li><a href="global.html#trimSegmentAlpha">trimSegmentAlpha</a></li>
 						<li><a href="global.html#updateCamera">updateCamera</a></li>
 						<li><a href="global.html#updateUserCamera">updateUserCamera</a></li>
 						<li><a href="global.html#viewportResolution">viewportResolution</a></li>
 						<li><a href="global.html#warn">warn</a></li>
 						<li><a href="global.html#warnOnce">warnOnce</a></li>
+						<li><a href="global.html#worldEnd">worldEnd</a></li>
+						<li><a href="global.html#worldPos">worldPos</a></li>
+						<li><a href="global.html#worldStart">worldStart</a></li>
 						<li><a href="global.html#yieldToMain">yieldToMain</a></li>
 					</ul>
 

@@ -132,12 +132,6 @@ The idea is to assign a `Fn` definition that holds the geometry modification log
 
 Default is `null`.
 
-### .hardwareClipping : boolean
-
-Whether this material uses hardware clipping or not. This property is managed by the engine and should not be modified by apps.
-
-Default is `false`.
-
 ### .isNodeMaterial : boolean (readonly)
 
 This flag can be used for type testing.
@@ -386,7 +380,7 @@ The current node builder.
 
 **Returns:** The lighting model.
 
-### .setupLights( builder : NodeBuilder ) : LightsNode
+### .setupMaterialLightings( builder : NodeBuilder ) : LightingNode.<Array>
 
 Setups the lights node based on the scene, environment and material.
 

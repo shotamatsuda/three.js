@@ -1049,6 +1049,14 @@ Zero slope ending for animations.
 
 Sets the stencil buffer value to `0`.
 
+### .batchColor : VaryingNode.<vec3> (constant)
+
+TSL object representing a varying property for the batching color vector.
+
+### .closestLineToLine (constant)
+
+Calculates the closest points on two 3D lines. Used for perspective-correct line rendering and coordinates interpolation.
+
 ### .depthAwareBlend (constant)
 
 Performs a depth-aware blend between a base scene and a secondary effect (like godrays). This function uses a Poisson disk sampling pattern to detect depth discontinuities in the neighborhood of the current pixel. If an edge is detected, it shifts the sampling coordinate for the blend node away from the edge to prevent light leaking/haloing.
@@ -1057,9 +1065,61 @@ Performs a depth-aware blend between a base scene and a secondary effect (like g
 
 Disposes the shadow material for the given light source.
 
+### .getBatchingColor (constant)
+
+TSL function that retrieves the batching color for a given instance ID from a colors texture.
+
+### .getIndirectIndex (constant)
+
+TSL function that retrieves the indirect index for a given batch ID.
+
+### .getMorph (constant)
+
+TSL function that retrieves and scales the morphed attribute (position or normal) texel value.
+
+### .instanceColor : VaryingNode.<vec3> (constant)
+
+TSL object representing a varying property for the instanced color vector.
+
+### .lineDistance : VaryingNode.<float> (constant)
+
+Varying node representing the accumulated distance along the line. Crucial for correctly computing dashed line intervals in fragment stage.
+
+### .morphTargetInfluences : ReferenceNode.<float> (constant)
+
+TSL object representing a reference to the mesh's morphTargetInfluences array.
+
+### .outgoingLight : Node.<vec3> (constant)
+
+A node representing the outgoing light.
+
+### .totalDiffuse : Node.<vec3> (constant)
+
+A node representing the total diffuse light.
+
+### .totalSpecular : Node.<vec3> (constant)
+
+A node representing the total specular light.
+
+### .trimSegmentAlpha (constant)
+
+Trims the line segment to avoid rendering behind the camera near plane. Computes an interpolation factor (alpha) to clamp the segment's coordinate.
+
 ### .viewportResolution (constant)
 
 **Deprecated:** since r169. Use [screenSize](TSL.html#screenSize) instead.
+
+### .worldEnd : VaryingNode.<vec3> (constant)
+
+Varying node representing the world position of the segment end in view space. Used for distance and coordinate calculations across the fragment shader.
+
+### .worldPos : VaryingNode.<vec4> (constant)
+
+Varying node representing the interpolated world/view position of the current fragment. Used for line/ray distance checks under perspective projection.
+
+### .worldStart : VaryingNode.<vec3> (constant)
+
+Varying node representing the world position of the segment start in view space. Used for distance and coordinate calculations across the fragment shader.
 
 ## Methods
 
@@ -1293,6 +1353,24 @@ The event type.
 
 The callback function.
 
+### .createInstanceMatrixNode( builder : NodeBuilder, instanceMatrix : InstancedBufferAttribute | StorageInstancedBufferAttribute, count : number ) : Node
+
+Creates the appropriate node for instanced matrix transformations. Depending on buffer limits and storage capability, returns either a storage, buffer, or instanced interleaved attribute node.
+
+**builder**
+
+The current node builder.
+
+**instanceMatrix**
+
+The matrix buffer attribute.
+
+**count**
+
+The instance count.
+
+**Returns:** The matrix node.
+
 ### .damp( x : number, y : number, lambda : number, dt : number ) : number
 
 Smoothly interpolate a number from `x` to `y` in a spring-like manner using a delta time to maintain frame rate independent movement. For details, see [Frame rate independent damping using lerp](http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/).
@@ -1515,6 +1593,16 @@ The light's decay exponent.
 
 Utility functions for parsing
 
+### .getEntry( geometry : BufferGeometry ) : Object
+
+Resolves or creates a compiled DataArrayTexture containing encoded vertex morph targets data for WebGL2/WebGPU.
+
+**geometry**
+
+The geometry to parse.
+
+**Returns:** The resolved morph targets texture data mapping entry.
+
 ### .getFilteredStack()
 
 Parses the stack trace and filters out ignored files. Returns an array with function name, file, line, and column.
@@ -1562,6 +1650,118 @@ Generates a layout for struct members. This function takes an object representin
 An object where keys are member names and values are either types (as strings) or objects with type and atomic properties.
 
 **Returns:** An array of member layouts.
+
+### .getPreviousInstance( instancedMesh : InstancedMesh, instanceMatrix : InstancedBufferAttribute | StorageInstancedBufferAttribute, builder : NodeBuilder, count : number ) : Node
+
+Retrieves or initializes the previous frame instance matrix node for motion vectors. Uses a WeakMap to cache previous frame instance matrices and their TSL nodes.
+
+**instancedMesh**
+
+The instanced mesh object.
+
+**instanceMatrix**
+
+The current matrix buffer attribute.
+
+**builder**
+
+The current node builder.
+
+**count**
+
+The instance count.
+
+**Returns:** The previous frame instance matrix node.
+
+### .getPreviousSkinnedPosition( skinnedMesh : SkinnedMesh, bindMatrixNode : Node.<mat4>, bindMatrixInverseNode : Node.<mat4>, skinIndexNode : Node.<uvec4>, skinWeightNode : Node.<vec4> ) : Node.<vec3>
+
+Retrieves or initializes the previous frame skinned position node for motion vectors. Uses a WeakMap to cache previous frame bone matrix arrays and their TSL buffer nodes.
+
+**skinnedMesh**
+
+The skinned mesh.
+
+**bindMatrixNode**
+
+The bind matrix node.
+
+**bindMatrixInverseNode**
+
+The inverse bind matrix node.
+
+**skinIndexNode**
+
+The skin index attribute.
+
+**skinWeightNode**
+
+The skin weight attribute.
+
+**Returns:** The skinned position from the previous frame.
+
+### .getSkinnedNormalAndTangent( boneMatrices : Node, normal : Node.<vec3>, tangent : Node.<vec3>, bindMatrix : Node.<mat4>, bindMatrixInverse : Node.<mat4>, skinIndex : Node.<uvec4>, skinWeight : Node.<vec4> ) : Object
+
+Computes the skinned normal and tangent vectors by applying bone matrices based on weights.
+
+**boneMatrices**
+
+The bone matrices buffer or storage node.
+
+**normal**
+
+The normal vector in local space.
+
+**tangent**
+
+The tangent vector in local space.
+
+**bindMatrix**
+
+The bind matrix node.
+
+**bindMatrixInverse**
+
+The inverse bind matrix node.
+
+**skinIndex**
+
+The skin index attribute.
+
+**skinWeight**
+
+The skin weight attribute.
+
+**Returns:** The skinned normal and tangent.
+
+### .getSkinnedPosition( boneMatrices : Node, position : Node.<vec3>, bindMatrix : Node.<mat4>, bindMatrixInverse : Node.<mat4>, skinIndex : Node.<uvec4>, skinWeight : Node.<vec4> ) : Node.<vec3>
+
+Computes the skinned position by applying bone matrices based on weights.
+
+**boneMatrices**
+
+The bone matrices buffer or storage node.
+
+**position**
+
+The vertex position to transform.
+
+**bindMatrix**
+
+The bind matrix node.
+
+**bindMatrixInverse**
+
+The inverse bind matrix node.
+
+**skinIndex**
+
+The skin index attribute.
+
+**skinWeight**
+
+The skin weight attribute.
+
+**Returns:** The skinned position.
 
 ### .getStrideLength( vectorLength : number ) : number
 

@@ -9279,8 +9279,18 @@ class VaryingNode extends Node {
 			const type = this.getNodeType( builder );
 			const propertyName = builder.getPropertyName( varying, NodeShaderStage.VERTEX );
 
-			// force node run in vertex stage
-			builder.flowNodeFromShaderStage( NodeShaderStage.VERTEX, properties.node, type, propertyName );
+			if ( builder.shaderStage === NodeShaderStage.VERTEX ) {
+
+				const snippet = properties.node.build( builder, type );
+
+				builder.addLineFlowCode( `${ propertyName } = ${ snippet }`, this );
+
+			} else {
+
+				// force node run in vertex stage
+				builder.flowNodeFromShaderStage( NodeShaderStage.VERTEX, properties.node, type, propertyName );
+
+			}
 
 			properties[ propertyKey ] = propertyName;
 
@@ -19374,10 +19384,11 @@ class LightingContextNode extends ContextNode {
 	 *
 	 * @param {LightsNode} lightsNode - The lights node.
 	 * @param {?LightingModel} [lightingModel=null] - The current lighting model.
+	 * @param {?Array<LightingNode>} materialLightings - The material lightings nodes.
 	 * @param {?Node<vec3>} [backdropNode=null] - A backdrop node.
 	 * @param {?Node<float>} [backdropAlphaNode=null] - A backdrop alpha node.
 	 */
-	constructor( lightsNode, lightingModel = null, backdropNode = null, backdropAlphaNode = null ) {
+	constructor( lightsNode, lightingModel = null, materialLightings = [], backdropNode = null, backdropAlphaNode = null ) {
 
 		super( lightsNode );
 
@@ -19388,6 +19399,12 @@ class LightingContextNode extends ContextNode {
 		 * @default null
 		 */
 		this.lightingModel = lightingModel;
+
+		/**
+		 * @type {?Array<LightingNode>}
+		 * @default []
+		 */
+		this.materialLightings = materialLightings;
 
 		/**
 		 * A backdrop node.
@@ -19424,7 +19441,7 @@ class LightingContextNode extends ContextNode {
 	 */
 	getContext() {
 
-		const { backdropNode, backdropAlphaNode } = this;
+		const { materialLightings, backdropNode, backdropAlphaNode } = this;
 
 		const directDiffuse = vec3().toVar( 'directDiffuse' ),
 			directSpecular = vec3().toVar( 'directSpecular' ),
@@ -19444,6 +19461,7 @@ class LightingContextNode extends ContextNode {
 			iblIrradiance: vec3().toVar( 'iblIrradiance' ),
 			ambientOcclusion: float( 1 ).toVar( 'ambientOcclusion' ),
 			reflectedLight,
+			materialLightings,
 			backdrop: backdropNode,
 			backdropAlpha: backdropAlphaNode
 		};
@@ -21515,9 +21533,9 @@ class NodeMaterial extends Material {
 	 * Setups the lights node based on the scene, environment and material.
 	 *
 	 * @param {NodeBuilder} builder - The current node builder.
-	 * @return {LightsNode} The lights node.
+	 * @return {LightingNode<Array>} The lights node.
 	 */
-	setupLights( builder ) {
+	setupMaterialLightings( builder ) {
 
 		const materialLightsNode = [];
 
@@ -21559,15 +21577,7 @@ class NodeMaterial extends Material {
 
 		}
 
-		let lightsN = this.lightsNode || builder.lightsNode;
-
-		if ( materialLightsNode.length > 0 ) {
-
-			lightsN = builder.renderer.lighting.createNode( [ ...lightsN.getLights(), ...materialLightsNode ] );
-
-		}
-
-		return lightsN;
+		return materialLightsNode;
 
 	}
 
@@ -21600,15 +21610,16 @@ class NodeMaterial extends Material {
 
 		const lights = this.lights === true || this.lightsNode !== null;
 
-		const lightsNode = lights ? this.setupLights( builder ) : null;
+		const materialLightings = this.lights === true ? this.setupMaterialLightings( builder ) : [];
+		const lightsNode = lights ? ( this.lightsNode || builder.lightsNode ) : null;
 
 		let outgoingLightNode = this.setupOutgoingLight( builder );
 
-		if ( lightsNode && lightsNode.getScope().hasLights ) {
+		if ( lightsNode && ( materialLightings.length > 0 || lightsNode.getScope().hasLights ) ) {
 
 			const lightingModel = this.setupLightingModel( builder ) || null;
 
-			outgoingLightNode = lightingContext( lightsNode, lightingModel, backdropNode, backdropAlphaNode );
+			outgoingLightNode = lightingContext( lightsNode, lightingModel, materialLightings, backdropNode, backdropAlphaNode );
 
 		} else if ( backdropNode !== null ) {
 
@@ -22529,8 +22540,6 @@ class Line2NodeMaterial extends NodeMaterial {
 	 * @type {?Node<vec3>}
 	 */
 	get lineColorNode() {
-
-		warnOnce( 'Line2NodeMaterial: "lineColorNode" has been deprecated. Use "colorNode" instead.' ); // @deprecated r185
 
 		return this.colorNode;
 
@@ -32930,7 +32939,7 @@ class RenderList {
 		 *
 		 * @type {LightsNode}
 		 */
-		this.lightsNode = lighting.getNode( scene, camera );
+		this.lightsNode = lighting.getNode( scene );
 
 		/**
 		 * The scene's lights stored in an array. This array
@@ -43169,12 +43178,48 @@ function lightViewPosition( light ) {
  */
 const lightTargetDirection = ( light ) => cameraViewMatrix.transformDirection( lightPosition( light ).sub( lightTargetPosition( light ) ) );
 
+/**
+ * A node representing the total diffuse light.
+ *
+ * @type {Node<vec3>}
+ */
+const totalDiffuse = property( 'vec3', 'totalDiffuse' );
+
+/**
+ * A node representing the total specular light.
+ *
+ * @type {Node<vec3>}
+ */
+const totalSpecular = property( 'vec3', 'totalSpecular' );
+
+/**
+ * A node representing the outgoing light.
+ *
+ * @type {Node<vec3>}
+ */
+const outgoingLight = property( 'vec3', 'outgoingLight' );
+
+/**
+ * Sorts an array of lights in ascending order by their IDs.
+ *
+ * @private
+ * @param {Array<Light>} lights - The array of lights to sort.
+ * @return {Array<Light>} The sorted array of lights.
+ */
 const sortLights = ( lights ) => {
 
 	return lights.sort( ( a, b ) => a.id - b.id );
 
 };
 
+/**
+ * Finds and returns a lighting node associated with a specific light ID.
+ *
+ * @private
+ * @param {number} id - The ID of the light to search for.
+ * @param {Array<LightingNode>} lightNodes - The array of lighting nodes to search within.
+ * @return {?LightingNode} The matching lighting node, or null if not found.
+ */
 const getLightNodeById = ( id, lightNodes ) => {
 
 	for ( const lightNode of lightNodes ) {
@@ -43191,7 +43236,20 @@ const getLightNodeById = ( id, lightNodes ) => {
 
 };
 
+/**
+ * WeakMap cache mapping light objects to their corresponding lighting node instances.
+ *
+ * @private
+ * @type {WeakMap<Light, LightingNode>}
+ */
 const _lightsNodeRef = /*@__PURE__*/ new WeakMap();
+
+/**
+ * Array used to temporarily store light IDs and shadow casting states for hashing.
+ *
+ * @private
+ * @type {Array<number>}
+ */
 const _hashData = [];
 
 /**
@@ -43221,21 +43279,21 @@ class LightsNode extends Node {
 		 *
 		 * @type {Node<vec3>}
 		 */
-		this.totalDiffuseNode = property( 'vec3', 'totalDiffuse' );
+		this.totalDiffuseNode = totalDiffuse;
 
 		/**
 		 * A node representing the total specular light.
 		 *
 		 * @type {Node<vec3>}
 		 */
-		this.totalSpecularNode = property( 'vec3', 'totalSpecular' );
+		this.totalSpecularNode = totalSpecular;
 
 		/**
 		 * A node representing the outgoing light.
 		 *
 		 * @type {Node<vec3>}
 		 */
-		this.outgoingLightNode = property( 'vec3', 'outgoingLight' );
+		this.outgoingLightNode = outgoingLight;
 
 		/**
 		 * An array representing the lights in the scene.
@@ -43244,25 +43302,6 @@ class LightsNode extends Node {
 		 * @type {Array<Light>}
 		 */
 		this._lights = [];
-
-		/**
-		 * For each light in the scene, this node will create a
-		 * corresponding light node.
-		 *
-		 * @private
-		 * @type {?Array<LightingNode>}
-		 * @default null
-		 */
-		this._lightNodes = null;
-
-		/**
-		 * A hash for identifying the current light nodes setup.
-		 *
-		 * @private
-		 * @type {?string}
-		 * @default null
-		 */
-		this._lightNodesHash = null;
 
 		/**
 		 * `LightsNode` sets this property to `true` by default.
@@ -43318,26 +43357,36 @@ class LightsNode extends Node {
 	 */
 	getHash( builder ) {
 
-		if ( this._lightNodesHash === null ) {
+		const nodeData = builder.getDataFromNode( this );
 
-			if ( this._lightNodes === null ) this.setupLightsNode( builder );
+		if ( nodeData.lightNodesHash === undefined ) {
+
+			const lightNodes = this.setupLightsNode( builder );
+
+			nodeData.lightNodes = lightNodes;
 
 			const hash = [];
 
-			for ( const lightNode of this._lightNodes ) {
+			for ( const lightNode of lightNodes ) {
 
 				hash.push( lightNode.getHash() );
 
 			}
 
-			this._lightNodesHash = 'lights-' + hash.join( ',' );
+			nodeData.lightNodesHash = 'lights-' + hash.join( ',' );
 
 		}
 
-		return this._lightNodesHash;
+		return nodeData.lightNodesHash;
 
 	}
 
+	/**
+	 * Analyzes the node's dependencies by building all nested light nodes
+	 * and the output node.
+	 *
+	 * @param {NodeBuilder} builder - A reference to the current node builder.
+	 */
 	analyze( builder ) {
 
 		const properties = builder.getNodeProperties( this );
@@ -43357,21 +43406,24 @@ class LightsNode extends Node {
 	 * process lights in the node system.
 	 *
 	 * @param {NodeBuilder} builder - A reference to the current node builder.
+	 * @return {Array<LightingNode>} The array of lighting nodes.
 	 */
 	setupLightsNode( builder ) {
 
+		const nodeData = builder.getDataFromNode( this );
 		const lightNodes = [];
 
-		const previousLightNodes = this._lightNodes;
+		const previousLightNodes = nodeData.lightNodes || null;
+		const materialLightings = builder.context.materialLightings;
 
-		const lights = sortLights( this._lights );
+		const lights = sortLights( [ ...materialLightings, ...this._lights ] );
 		const nodeLibrary = builder.renderer.library;
 
 		for ( const light of lights ) {
 
 			if ( light.isNode ) {
 
-				lightNodes.push( nodeObject( light ) );
+				lightNodes.push( light );
 
 			} else {
 
@@ -43410,7 +43462,7 @@ class LightsNode extends Node {
 
 		}
 
-		this._lightNodes = lightNodes;
+		return lightNodes;
 
 	}
 
@@ -43433,6 +43485,13 @@ class LightsNode extends Node {
 
 	}
 
+	/**
+	 * Sets up a direct rect area light in the lighting model.
+	 *
+	 * @param {Object} builder - The builder object containing the context and stack.
+	 * @param {Object} lightNode - The light node.
+	 * @param {Object} lightData - The light object containing color and area light properties.
+	 */
 	setupDirectRectAreaLight( builder, lightNode, lightData ) {
 
 		const { lightingModel, reflectedLight } = builder.context;
@@ -43464,9 +43523,15 @@ class LightsNode extends Node {
 
 	getLightNodes( builder ) {
 
-		if ( this._lightNodes === null ) this.setupLightsNode( builder );
+		const nodeData = builder.getDataFromNode( this );
 
-		return this._lightNodes;
+		if ( nodeData.lightNodes === undefined ) {
+
+			nodeData.lightNodes = this.setupLightsNode( builder );
+
+		}
+
+		return nodeData.lightNodes;
 
 	}
 
@@ -43552,9 +43617,6 @@ class LightsNode extends Node {
 	setLights( lights ) {
 
 		this._lights = lights;
-
-		this._lightNodes = null;
-		this._lightNodesHash = null;
 
 		return this;
 
@@ -56083,9 +56145,8 @@ class Lighting {
 	 */
 	getNode( scene ) {
 
-		// ignore post-processing
-
-		if ( scene.isQuadMesh ) return _defaultLights;
+		// Ignore renderable objects, e.g: Mesh, Sprite, etc.
+		if ( scene.isScene !== true && scene.isGroup !== true ) return _defaultLights;
 
 		let node = _weakMap.get( scene );
 
