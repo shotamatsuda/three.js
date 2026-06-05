@@ -422,6 +422,7 @@ async function preparePage( page, injection, builds, errorMessages ) {
 async function checkFile( ctx, failedScreenshots, cleanPage, isMakeScreenshot, file ) {
 
 	const page = ctx.page;
+	const pageStart = performance.now();
 
 	try {
 
@@ -495,13 +496,15 @@ async function checkFile( ctx, failedScreenshots, cleanPage, isMakeScreenshot, f
 
 				throw new Error( `Error happened while rendering file ${ file }: ${ e }` );
 
-			} /* else { // This can mean that the example doesn't use requestAnimationFrame loop
+			} else { // This can mean that the example doesn't use requestAnimationFrame loop
 
 				console.yellow( `Render timeout exceeded in file ${ file }` );
 
-			} */ // TODO: fix this
+			}
 
 		}
+
+		const pageDuration = + ( ( performance.now() - pageStart ) / 1000 ).toFixed( 1 );
 
 		const screenshot = ( await Image.read( await page.screenshot() ) ).scale( 1 / viewScale );
 
@@ -555,14 +558,14 @@ async function checkFile( ctx, failedScreenshots, cleanPage, isMakeScreenshot, f
 
 			if ( differentPixels < maxDifferentPixels ) {
 
-				console.green( `Diff ${ differentPixels.toFixed( 1 ) }% in file: ${ file }` );
+				console.green( `Diff ${ differentPixels.toFixed( 1 ) }% in file: ${ file } (${ pageDuration }s)` );
 
 			} else {
 
 				await screenshot.write( `test/e2e/output-screenshots/${ file }-actual.jpg`, jpgQuality );
 				await expected.write( `test/e2e/output-screenshots/${ file }-expected.jpg`, jpgQuality );
 				await diff.write( `test/e2e/output-screenshots/${ file }-diff.jpg`, jpgQuality );
-				throw new Error( `Diff wrong in ${ differentPixels.toFixed( 1 ) }% of pixels in file: ${ file }` );
+				throw new Error( `Diff wrong in ${ differentPixels.toFixed( 1 ) }% of pixels in file: ${ file } (${ pageDuration }s)` );
 
 			}
 
